@@ -16,6 +16,8 @@ class PlaySoundsViewController: UIViewController {
     @IBOutlet weak var rabbitButton: UIButton!
     @IBOutlet weak var vaderButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
+    @IBOutlet weak var echoButton: UIButton!
+    @IBOutlet weak var reverbButton: UIButton!
     
     var recordedAudioURL: NSURL!
     var audioFile: AVAudioFile!
@@ -24,7 +26,7 @@ class PlaySoundsViewController: UIViewController {
     var stopTimer: NSTimer!
         
     enum ButtonType: Int {
-        case Slow = 0, Fast, Chipmunk, Vader
+        case Slow = 0, Fast, Chipmunk, Vader, Echo, Reverb
     }
 
     override func viewDidLoad() {
@@ -65,6 +67,10 @@ class PlaySoundsViewController: UIViewController {
             playSound(pitch: 1000)
         case .Vader:
             playSound(pitch: -1000)
+        case .Echo:
+            playSound(echo: true)
+        case .Reverb:
+            playSound(reverb: true)
         }
         configureUI(.Playing)
     }

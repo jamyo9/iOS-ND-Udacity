@@ -23,7 +23,7 @@ extension PlaySoundsViewController: AVAudioPlayerDelegate {
     
     // raw values correspond to sender tags
     enum PlayingState { case Playing, NotPlaying }
-
+    
     
     // MARK: Audio Functions
     
@@ -94,7 +94,7 @@ extension PlaySoundsViewController: AVAudioPlayerDelegate {
             }
             
             // schedule a stop timer for when audio finishes playing
-            self.stopTimer = NSTimer(timeInterval: delayInSeconds, target: self, selector: #selector(PlaySoundsViewController.stopAudio), userInfo: nil, repeats: false)
+            self.stopTimer = NSTimer(timeInterval: delayInSeconds, target: self, selector: "stopAudio", userInfo: nil, repeats: false)
             NSRunLoop.mainRunLoop().addTimer(self.stopTimer!, forMode: NSDefaultRunLoopMode)
         }
         
@@ -138,7 +138,7 @@ extension PlaySoundsViewController: AVAudioPlayerDelegate {
     
     
     // MARK: UI Functions
-
+    
     func configureUI(playState: PlayingState) {
         switch(playState) {
         case .Playing:
@@ -155,11 +155,16 @@ extension PlaySoundsViewController: AVAudioPlayerDelegate {
         chipmunkButton.enabled = enabled
         rabbitButton.enabled = enabled
         vaderButton.enabled = enabled
+        echoButton.enabled = enabled
+        reverbButton.enabled = enabled
     }
+    
     
     func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: Alerts.DismissAlert, style: .Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
     }
+    
+    
 }
