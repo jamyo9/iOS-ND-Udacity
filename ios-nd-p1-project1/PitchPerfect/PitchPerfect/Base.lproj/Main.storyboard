@@ -69,7 +69,7 @@
                                                     <action selector="playSoundForButton:" destination="HzV-J9-rmx" eventType="touchUpInside" id="TeG-bN-Uj9"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q7Q-tf-IsU" userLabel="reverbButton">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Q7Q-tf-IsU" userLabel="reverbButton">
                                                 <rect key="frame" x="280" y="0.0" width="280" height="134"/>
                                                 <state key="normal" image="ReverbButton"/>
                                                 <connections>
@@ -95,10 +95,14 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="1Ou-jO-txK" firstAttribute="top" secondItem="ynm-ed-GRL" secondAttribute="bottom" id="Dhq-56-QE2"/>
                             <constraint firstItem="1Ou-jO-txK" firstAttribute="trailing" secondItem="tBn-cg-6I5" secondAttribute="trailingMargin" id="JPx-R1-hPx"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="1Ou-jO-txK" secondAttribute="trailing" id="MT9-hL-1DK"/>
                             <constraint firstItem="1Ou-jO-txK" firstAttribute="bottom" secondItem="v3L-aw-b8S" secondAttribute="top" id="YaP-QE-oZN"/>
                             <constraint firstItem="1Ou-jO-txK" firstAttribute="leading" secondItem="tBn-cg-6I5" secondAttribute="leadingMargin" id="d2b-Xn-0GO"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="1Ou-jO-txK" secondAttribute="leading" id="dI2-19-4cb"/>
                             <constraint firstItem="1Ou-jO-txK" firstAttribute="top" secondItem="ynm-ed-GRL" secondAttribute="bottom" id="raR-Yd-ba1"/>
+                            <constraint firstItem="v3L-aw-b8S" firstAttribute="top" secondItem="1Ou-jO-txK" secondAttribute="bottom" id="xoj-NN-oxd"/>
                         </constraints>
                     </view>
                     <connections>
@@ -128,36 +132,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dpb-Yi-Dwk" userLabel="startRecording">
-                                <rect key="frame" x="250" y="250" width="100" height="100"/>
+                                <rect key="frame" x="250" y="161" width="100" height="100"/>
                                 <state key="normal" image="recordButton"/>
                                 <connections>
                                     <action selector="recordAudio:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LNi-MZ-ZPQ"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to Record" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qzo-g1-fdk">
+                                <rect key="frame" x="247" y="289" width="107" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vhb-El-tp5" userLabel="stopRecording">
-                                <rect key="frame" x="275" y="432" width="50" height="50"/>
+                                <rect key="frame" x="275" y="347" width="50" height="50"/>
                                 <state key="normal" image="stopButton"/>
                                 <connections>
                                     <action selector="stopRecording:" destination="BYZ-38-t0r" eventType="touchUpInside" id="sJ6-Ci-Pg8"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to Record" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qzo-g1-fdk">
-                                <rect key="frame" x="247" y="391" width="107" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="dpb-Yi-Dwk" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="332-yf-Yl0"/>
-                            <constraint firstItem="Qzo-g1-fdk" firstAttribute="centerX" secondItem="dpb-Yi-Dwk" secondAttribute="centerX" id="7Qd-Xw-Xa4"/>
-                            <constraint firstItem="Qzo-g1-fdk" firstAttribute="centerX" secondItem="vhb-El-tp5" secondAttribute="centerX" id="M68-V5-fh9"/>
-                            <constraint firstItem="vhb-El-tp5" firstAttribute="top" secondItem="Qzo-g1-fdk" secondAttribute="bottom" constant="20" id="NZA-gy-onp"/>
-                            <constraint firstItem="vhb-El-tp5" firstAttribute="top" secondItem="Qzo-g1-fdk" secondAttribute="bottom" constant="20" id="dUQ-cE-e24"/>
-                            <constraint firstItem="Qzo-g1-fdk" firstAttribute="top" secondItem="dpb-Yi-Dwk" secondAttribute="bottom" constant="41" id="gy9-V3-Axi"/>
-                            <constraint firstItem="dpb-Yi-Dwk" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qb0-BQ-Fq2"/>
-                            <constraint firstItem="vhb-El-tp5" firstAttribute="centerX" secondItem="Qzo-g1-fdk" secondAttribute="centerX" id="t83-hb-K3D"/>
+                            <constraint firstItem="dpb-Yi-Dwk" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="3EK-0V-jJn"/>
+                            <constraint firstItem="Qzo-g1-fdk" firstAttribute="top" secondItem="dpb-Yi-Dwk" secondAttribute="bottom" constant="28" id="3nc-U3-usq"/>
+                            <constraint firstItem="vhb-El-tp5" firstAttribute="centerX" secondItem="Qzo-g1-fdk" secondAttribute="centerX" id="E0K-O0-1Nm"/>
+                            <constraint firstItem="Qzo-g1-fdk" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="QMJ-cq-gor"/>
+                            <constraint firstItem="vhb-El-tp5" firstAttribute="top" secondItem="Qzo-g1-fdk" secondAttribute="bottom" constant="37" id="VLa-Ym-WYH"/>
+                            <constraint firstItem="Qzo-g1-fdk" firstAttribute="centerX" secondItem="dpb-Yi-Dwk" secondAttribute="centerX" id="d4p-x3-VN1"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ASc-mz-Q1P"/>

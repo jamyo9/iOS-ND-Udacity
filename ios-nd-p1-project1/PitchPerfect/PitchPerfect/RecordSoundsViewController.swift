@@ -17,11 +17,13 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     
     var audioRecorder:AVAudioRecorder!
     
+    enum RecordingState { case Recording, NotRecording }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         print("viewDidLoad Called")
-        stopRecording.enabled = false
+        configureUI(.NotRecording)
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,9 +42,8 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func recordAudio(sender: AnyObject) {
         print("Recording...")
-        recordLabel.text = "Recording..."
-        startRecording.enabled = false
-        stopRecording.enabled = true
+        
+        configureUI(.Recording)
         
         let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory,.UserDomainMask, true)[0] as String
         let recordingName = "recordedVoice.wav"
@@ -62,9 +63,7 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     @IBAction func stopRecording(sender: AnyObject) {
         print("Stop recording!")
-        startRecording.enabled = true
-        stopRecording.enabled = false
-        recordLabel.text = "Tap to Record"
+        configureUI(.NotRecording)
         
         audioRecorder.stop()
         let audioSession = AVAudioSession.sharedInstance()
@@ -87,6 +86,22 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
             let recordAudioURL = sender as! NSURL
             playSoundVC.recordedAudioURL = recordAudioURL
         }
+    }
+    
+    func configureUI(recordingState: RecordingState) {
+        switch(recordingState) {
+        case .Recording:
+            setPlayButtonsEnabled(false)
+            recordLabel.text = "Recording..."
+        case .NotRecording:
+            setPlayButtonsEnabled(true)
+            recordLabel.text = "Tap to Record"
+        }
+    }
+    
+    func setPlayButtonsEnabled(enabled: Bool) {
+        startRecording.enabled = enabled
+        stopRecording.enabled = !enabled
     }
 }
 

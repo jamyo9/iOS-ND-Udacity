@@ -15,9 +15,9 @@ class PlaySoundsViewController: UIViewController {
     @IBOutlet weak var chipmunkButton: UIButton!
     @IBOutlet weak var rabbitButton: UIButton!
     @IBOutlet weak var vaderButton: UIButton!
-    @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var echoButton: UIButton!
     @IBOutlet weak var reverbButton: UIButton!
+    @IBOutlet weak var stopButton: UIButton!
     
     var recordedAudioURL: NSURL!
     var audioFile: AVAudioFile!
@@ -44,7 +44,13 @@ class PlaySoundsViewController: UIViewController {
         super.viewWillAppear(animated)
         print("PlaySoundsViewController.viewWillAppear")
         configureUI(.NotPlaying)
-        
+        snailButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        chipmunkButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        rabbitButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        vaderButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        echoButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        reverbButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        stopButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
