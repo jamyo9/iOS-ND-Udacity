@@ -156,6 +156,7 @@
 		4D673C921A1BC5E200F01D25 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Udacity;
 				TargetAttributes = {
@@ -405,6 +406,7 @@
 				4D673CBB1A1BC5E200F01D25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4D673CBC1A1BC5E200F01D25 /* Build configuration list for PBXNativeTarget "FavoriteThingsTests" */ = {
 			isa = XCConfigurationList;
@@ -413,6 +415,7 @@
 				4D673CBE1A1BC5E200F01D25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
