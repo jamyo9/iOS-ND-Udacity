@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -17,11 +18,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="launchScreenImage" translatesAutoresizingMaskIntoConstraints="NO" id="0uo-6D-Vkn">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchScreenImage" translatesAutoresizingMaskIntoConstraints="NO" id="0uo-6D-Vkn">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="0uo-6D-Vkn" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="-20" id="5d7-LA-hzZ"/>
+                            <constraint firstItem="0uo-6D-Vkn" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="-20" id="JRq-OB-W1O"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="0uo-6D-Vkn" secondAttribute="bottom" id="UBQ-eF-MHf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="0uo-6D-Vkn" secondAttribute="trailing" constant="-20" id="ZcL-Hc-SUh"/>
+                            <constraint firstItem="0uo-6D-Vkn" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ggS-N1-Xxx"/>
+                            <constraint firstItem="0uo-6D-Vkn" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="q31-i9-F5A"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
