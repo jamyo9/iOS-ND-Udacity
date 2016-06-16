@@ -11,85 +11,12 @@ import Photos
 class MemePhotoAlbum: NSObject {
     
     
-//    //var image: UIImage!
     var albumFound : Bool = false
-//    var photosAsset: PHFetchResult!
-//    var assetThumbnailSize:CGSize!
-//    var collection: PHAssetCollection!
     var assetCollectionPlaceholder: PHObjectPlaceholder!
 
     var assetCollection: PHAssetCollection!
     static let albumName = "Meme Me Album"
     static let sharedInstance = MemePhotoAlbum()
-//    
-//    func createAlbum() {
-//        //Get PHFetch Options
-//        let fetchOptions = PHFetchOptions()
-//        fetchOptions.predicate = NSPredicate(format: "title = %@", MemePhotoAlbum.albumName)
-//        let collection : PHFetchResult = PHAssetCollection.fetchAssetCollectionsWithType(.Album, subtype: .Any, options: fetchOptions)
-//        //Check return value - If found, then get the first album out
-//        if let _: AnyObject = collection.firstObject {
-//            self.albumFound = true
-//            assetCollection = collection.firstObject as! PHAssetCollection
-//        } else {
-//            //If not found - Then create a new album
-//            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-//                let createAlbumRequest : PHAssetCollectionChangeRequest = PHAssetCollectionChangeRequest.creationRequestForAssetCollectionWithTitle("camcam")
-//                self.assetCollectionPlaceholder = createAlbumRequest.placeholderForCreatedAssetCollection
-//                }, completionHandler: { success, error in
-//                    self.albumFound = (success ? true: false)
-//                    if (success) {
-//                        let collectionFetchResult = PHAssetCollection.fetchAssetCollectionsWithLocalIdentifiers([self.assetCollectionPlaceholder.localIdentifier], options: nil)
-//                        print(collectionFetchResult)
-//                        self.assetCollection = collectionFetchResult.firstObject as! PHAssetCollection
-//                    }
-//            })
-//        }
-//    }
-//    
-//    func saveImage(image: UIImage){
-//        
-//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-//        
-//        
-//        self.createAlbum()
-//        
-//        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-//            let assetRequest = PHAssetChangeRequest.creationRequestForAssetFromImage(image)
-//            let albumChangeRequest = PHAssetCollectionChangeRequest(forAssetCollection: self.assetCollection, assets: self.photosAsset)
-//            albumChangeRequest!.addAssets([assetRequest.placeholderForCreatedAsset!])
-//            }, completionHandler: nil)
-//    }
-//    
-//    func showImages() {
-//        //This will fetch all the assets in the collection
-//        
-//        let assets : PHFetchResult = PHAsset.fetchAssetsInAssetCollection(assetCollection, options: nil)
-//        print(assets)
-//        
-//        let imageManager = PHCachingImageManager()
-//        //Enumerating objects to get a chached image - This is to save loading time
-//        assets.enumerateObjectsUsingBlock{(object: AnyObject!,
-//            count: Int,
-//            stop: UnsafeMutablePointer<ObjCBool>) in
-//            
-//            if object is PHAsset {
-//                let asset = object as! PHAsset
-//                print(asset)
-//                
-//                let imageSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
-//                
-//                let options = PHImageRequestOptions()
-//                options.deliveryMode = .FastFormat
-//                
-//                imageManager.requestImageForAsset(asset, targetSize: imageSize, contentMode: .AspectFill, options: options, resultHandler: {(image: UIImage?,
-//                    info: [NSObject : AnyObject]?) in
-//                    print(info)
-//                    print(image)
-//                })
-//            }
-//        }
-//    }
     
     override init() {
         super.init()

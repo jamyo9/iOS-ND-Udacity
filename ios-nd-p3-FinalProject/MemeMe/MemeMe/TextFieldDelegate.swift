@@ -18,7 +18,6 @@ class TextFieldDelegate: NSObject, UITextFieldDelegate {
         // Construct the text that will be in the field if this change is accepted
         var newText = textField.text! as NSString
         newText = newText.stringByReplacingCharactersInRange(range, withString: string)
-        
         return newText.length <= 50
     }
     
@@ -28,6 +27,10 @@ class TextFieldDelegate: NSObject, UITextFieldDelegate {
         if ((textField.text == "TOP") || textField.text == "BOTTOM" ) {
             textField.text = ""
         }
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        textField.text = textField.text?.uppercaseString
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
