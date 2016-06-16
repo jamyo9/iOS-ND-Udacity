@@ -146,7 +146,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func generateMemedImage() -> UIImage {
         
+        // hide bars
         showHideBars(true, hideBottom: true)
+        
+        //change background to black
+        let defaultColor = view.backgroundColor
+        view.backgroundColor = UIColor.blackColor()
         
         // Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
@@ -154,6 +159,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let memedImage : UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
+        //change background color to default color
+        view.backgroundColor = defaultColor
+        
+        //show bars
         showHideBars(false, hideBottom: false)
         
         return memedImage
