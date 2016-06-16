@@ -47,12 +47,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         libraryButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.PhotoLibrary)
         
         // Text fild init
-        self.topTextField.delegate = textFieldDelegate
-        self.bottomTextField.delegate = textFieldDelegate
-        self.topTextField.defaultTextAttributes = memeTextAttributes
-        self.bottomTextField.defaultTextAttributes = memeTextAttributes
-        self.topTextField.textAlignment = .Center
-        self.bottomTextField.textAlignment = .Center
+        setTextFieldProperties(self.topTextField)
+        setTextFieldProperties(self.bottomTextField)
         
         // Subscribe Notifications
         subscribeToKeyboardNotifications()
@@ -67,6 +63,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
         return [.AllButUpsideDown]
+    }
+    
+    func setTextFieldProperties(textField: UITextField) {
+        textField.delegate = textFieldDelegate
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.textAlignment = .Center
     }
     
     
@@ -118,7 +120,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        view.frame.origin.y = 0
     }
     
     func getKeyboardHeight(notification: NSNotification) -> CGFloat {
@@ -137,7 +139,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let alert = UIAlertController(title: "Confirmation", message: "Do you want to save the Meme", preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
         alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: {action in self.save(meme)}))
-        self.presentViewController(alert, animated: true, completion: nil)
+        presentViewController(alert, animated: true, completion: nil)
     }
     
     func save(meme: MemeObject) {
