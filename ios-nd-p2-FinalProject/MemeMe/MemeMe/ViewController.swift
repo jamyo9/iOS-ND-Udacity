@@ -29,8 +29,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let memeTextAttributes = [
         NSStrokeColorAttributeName : UIColor.blackColor(),
         NSForegroundColorAttributeName : UIColor.whiteColor(),
-        NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 20)!,
-        NSStrokeWidthAttributeName : 0
+        NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 35)!,
+        NSStrokeWidthAttributeName : -3.0
     ]
     
     // Override functions
