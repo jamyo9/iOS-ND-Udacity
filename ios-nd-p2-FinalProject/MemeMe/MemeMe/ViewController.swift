@@ -143,7 +143,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     func save(meme: MemeObject) {
-        MemePhotoAlbum.sharedInstance.saveImage(meme.memedImage)
+        let object = UIApplication.sharedApplication().delegate
+        let appDelegate = object as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func generateMemedImage() -> UIImage {
@@ -180,9 +182,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let memedImage = generateMemedImage()
         let activityViewController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
         activityViewController.completionWithItemsHandler = { (type: String?, returnedItem: Bool, items: [AnyObject]?, error: NSError?) -> Void in
-//            if returnedItem {
-//                self.saveMeme()
-//            } else
+            if returnedItem {
+                self.saveMeme()
+            } else
             if error != nil {
                 print("\(error)")
             } else {
@@ -193,4 +195,3 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
 }
-
