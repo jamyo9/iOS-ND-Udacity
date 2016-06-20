@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "MemesTableViewController.memes.getter:MemesTableViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "(UIApplication.sharedApplication().delegate as! AppDelegate).memes">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MemesTableViewController.viewDidLoad() -&gt; ():MemesTableViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "EditMemeViewController.shareMeme() -&gt; ():EditMemeViewController.swift">
+      </ContextState>
+      <ContextState
+         contextName = "EditMemeViewController.saveMeme() -&gt; ():EditMemeViewController.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
