@@ -16,19 +16,11 @@ class MemesTableViewController: UITableViewController {
     
     // Override functions
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     override func viewWillAppear(animated: Bool) {
-        //super.viewWillAppear(animated)
+        super.viewWillAppear(animated)
         tableView.hidden = false
         tableView.reloadData()
         tabBarController?.tabBar.hidden = false
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
     }
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {

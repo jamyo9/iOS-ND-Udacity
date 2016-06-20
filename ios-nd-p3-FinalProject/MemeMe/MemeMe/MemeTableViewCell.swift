@@ -8,6 +8,8 @@
 
 import UIKit
 
+
+//Copided from Udacity forum
 class MemeTableViewCell: UITableViewCell {
     
     

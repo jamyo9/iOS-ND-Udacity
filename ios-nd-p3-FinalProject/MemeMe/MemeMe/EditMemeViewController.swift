@@ -35,7 +35,11 @@ class EditMemeViewController: UIViewController, UIImagePickerControllerDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        // Text fild init
+        setTextFieldProperties(self.topTextField)
+        setTextFieldProperties(self.bottomTextField)
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -44,20 +48,13 @@ class EditMemeViewController: UIViewController, UIImagePickerControllerDelegate,
         cameraButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
         libraryButton.enabled = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.PhotoLibrary)
         
-        // Text fild init
-        setTextFieldProperties(self.topTextField)
-        setTextFieldProperties(self.bottomTextField)
-        
         // Subscribe Notifications
         subscribeNotifications()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-    }
-    
-    deinit {
-        // Unsubscribe Notifications
+        
         unsubscribeNotifications()
     }
     
@@ -107,21 +104,17 @@ class EditMemeViewController: UIViewController, UIImagePickerControllerDelegate,
     func subscribeNotifications() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(EditMemeViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(EditMemeViewController.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(EditMemeViewController.orientationChanged(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
-
     }
     
     func unsubscribeNotifications() {
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
-        
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
     }
     
     func keyboardWillShow(notification: NSNotification) {
         if bottomTextField.isFirstResponder(){
-            view.frame.origin.y -= getKeyboardHeight(notification)
+            //view.frame.origin.y -= getKeyboardHeight(notification)
+            view.frame.origin.y = getKeyboardHeight(notification) * (-1)
         }
     }
     
@@ -134,18 +127,6 @@ class EditMemeViewController: UIViewController, UIImagePickerControllerDelegate,
         let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue // of CGRect
         return keyboardSize.CGRectValue().height
     }
-    
-    
-    func orientationChanged(notification: NSNotification) {
-        print("orientationChanged")
-        print(view.frame.origin.y)
-        if (view.frame.origin.y != CGFloat(0.0) ) {
-            print("y != 0")
-            keyboardWillHide(notification)
-            keyboardWillShow(notification)
-        }
-    }
-    
     
     // Cancel Action
     
