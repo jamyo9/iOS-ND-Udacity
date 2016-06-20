@@ -8,11 +8,11 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class EditMemeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var libraryButton: UIBarButtonItem!
-    @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var shareButton: UIBarButtonItem!
     
     @IBOutlet weak var imagePickerView: UIImageView!
@@ -21,8 +21,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     @IBOutlet weak var topToolBar: UINavigationBar!
     @IBOutlet weak var bottomToolBar: UIToolbar!
-    
-//    var priorKeyboardHeight = CGFloat()
     
     var textFieldDelegate = TextFieldDelegate()
     
@@ -51,14 +49,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         setTextFieldProperties(self.bottomTextField)
         
         // Subscribe Notifications
-        subscribeToKeyboardNotifications()
+        subscribeNotifications()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        
+    }
+    
+    deinit {
         // Unsubscribe Notifications
-        unsubscribeFromKeyboardNotifications()
+        unsubscribeNotifications()
     }
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
@@ -101,16 +101,22 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         dismissViewControllerAnimated(true, completion: nil)
     }
     
+    
     //KeyBoard
     
-    func subscribeToKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+    func subscribeNotifications() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(EditMemeViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(EditMemeViewController.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(EditMemeViewController.orientationChanged(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+
     }
     
-    func unsubscribeFromKeyboardNotifications() {
+    func unsubscribeNotifications() {
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
     }
     
     func keyboardWillShow(notification: NSNotification) {
@@ -129,21 +135,53 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return keyboardSize.CGRectValue().height
     }
     
-    // Save Action
     
-    @IBAction func saveMeme() {
-        //Create the meme
-        let meme = MemeObject( topText: topTextField.text!, bottomText: bottomTextField.text!, image: imagePickerView.image, memedImage: generateMemedImage())
-        dismissViewControllerAnimated(true, completion: nil)
-        
-        let alert = UIAlertController(title: "Confirmation", message: "Do you want to save the Meme", preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
-        alert.addAction(UIAlertAction(title: "Save", style: UIAlertActionStyle.Default, handler: {action in self.save(meme)}))
-        presentViewController(alert, animated: true, completion: nil)
+    func orientationChanged(notification: NSNotification) {
+        print("orientationChanged")
+        print(view.frame.origin.y)
+        if (view.frame.origin.y != CGFloat(0.0) ) {
+            print("y != 0")
+            keyboardWillHide(notification)
+            keyboardWillShow(notification)
+        }
     }
     
-    func save(meme: MemeObject) {
-        MemePhotoAlbum.sharedInstance.saveImage(meme.memedImage)
+    
+    // Cancel Action
+    
+    @IBAction func cancelMeme() {
+        cancel()
+    }
+    
+    func cancel() {
+        presentingViewController?.dismissViewControllerAnimated(true, completion:nil)
+    }
+    
+    // Share Action
+    @IBAction func shareMeme() {
+        let memedImage = generateMemedImage()
+        let activityViewController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
+        activityViewController.completionWithItemsHandler = { (type: String?, returnedItem: Bool, items: [AnyObject]?, error: NSError?) -> Void in
+            if returnedItem {
+                self.saveMeme()
+                self.cancel()
+            } else
+            if error != nil {
+                print("\(error)")
+            } else {
+                print("Unknown cancel -- user likely clicked \"cancel\" to dismiss activity view.")
+            }
+        }
+        presentViewController(activityViewController, animated: true, completion: nil)
+    }
+    
+    // Save Meme
+    func saveMeme() {
+        //Create the meme
+        let meme = Meme( topText: topTextField.text!, bottomText: bottomTextField.text!, image: imagePickerView.image, memedImage: generateMemedImage())
+        let object = UIApplication.sharedApplication().delegate
+        let appDelegate = object as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func generateMemedImage() -> UIImage {
@@ -175,22 +213,4 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         bottomToolBar.hidden = hideBottom
     }
     
-    // Share Action
-    @IBAction func shareMeme() {
-        let memedImage = generateMemedImage()
-        let activityViewController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
-        activityViewController.completionWithItemsHandler = { (type: String?, returnedItem: Bool, items: [AnyObject]?, error: NSError?) -> Void in
-//            if returnedItem {
-//                self.saveMeme()
-//            } else
-            if error != nil {
-                print("\(error)")
-            } else {
-                print("Unknown cancel -- user likely clicked \"cancel\" to dismiss activity view.")
-            }
-        }
-        presentViewController(activityViewController, animated: true, completion: nil)
-    }
-    
 }
-

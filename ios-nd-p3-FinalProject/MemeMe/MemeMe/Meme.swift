@@ -1,5 +1,5 @@
 //
-//  MemeObject.swift
+//  Meme.swift
 //  MemeMe
 //
 //  Created by Juan Alvarez on 14/6/16.
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-struct MemeObject {
+struct Meme {
     var topText: String!
     var bottomText: String!
     var image: UIImage!
