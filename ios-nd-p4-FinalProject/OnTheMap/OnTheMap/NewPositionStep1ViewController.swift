@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class NewPositionStep1ViewController: UIViewController {
     
@@ -14,9 +15,11 @@ class NewPositionStep1ViewController: UIViewController {
     @IBOutlet weak var positionTextField: UITextField!
     @IBOutlet weak var findButton: UIButton!
     
+    var appDelegate: AppDelegate!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -35,8 +38,28 @@ class NewPositionStep1ViewController: UIViewController {
     @IBAction func findLocation(sender: AnyObject) {
         let storyboard = UIStoryboard (name: "Main", bundle: nil)
         let controller = storyboard.instantiateViewControllerWithIdentifier("NewPositionStep2StoryboardID") as! NewPositionStep2ViewController
-        controller.location = self.positionTextField.text
+        let pos = createPosition(self.positionTextField.text!)
+        controller.position = pos
         self.presentViewController(controller, animated: true, completion: nil);
     }
     
+    func createPosition(mapString: String) -> Position {
+        var pos = Position()
+        //self.objectId = ""
+        //self.uniqueKey = 0
+        pos.firstName = self.appDelegate.loggedInPosition!.firstName
+        pos.lastName = self.appDelegate.loggedInPosition!.lastName
+        pos.mediaURL = ""
+        pos.mapString = mapString
+        pos.createdAt = parseDate(NSDate())
+        pos.updatedAt = ""
+        return pos
+    }
+    
+    func parseDate(date: NSDate) -> String {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let dateStr = dateFormatter.stringFromDate(date)
+        return dateStr
+    }
 }

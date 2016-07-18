@@ -32,7 +32,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Add a notification observer for updates to student location data from Parse.
+        // Add a notification observer for updates to position data from Parse.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MapViewController.onPositionsUpdate), name: "positionsUpdateNotificationKey", object: nil)
         
         // Clear any existing pins before redrawing them (e.g. if navigating back to the map view from the InfoPosting view.)
@@ -77,7 +77,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     /* Refresh button was selected. */
     @IBAction func onRefreshButtonTap() {
-        // refresh the collection of student locations from Parse
+        // refresh the collection of position from Parse
         positions.reset()
         positions.getPositions(0) { success, errorString in
             if success == false {
@@ -178,7 +178,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == annotationView.rightCalloutAccessoryView {
             if let urlString = annotationView.annotation!.subtitle {
-                showUrlInEmbeddedBrowser(urlString!)
+                showUrlInExternalWebKitBrowser(urlString!)
             }
         }
     }
@@ -228,18 +228,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 //    }
     
     /* Display url in external Safari browser. */
-//    func showUrlInExternalWebKitBrowser(url: String) {
-//        if let requestUrl = NSURL(string: url) {
-//            UIApplication.sharedApplication().openURL(requestUrl)
-//        }
-//    }
-    
-    /* Display url in an embeded webkit browser in the navigation controller. */
-    func showUrlInEmbeddedBrowser(url: String) {
-        let storyboard = UIStoryboard (name: "Main", bundle: nil)
-        let controller = storyboard.instantiateViewControllerWithIdentifier("WebViewStoryboardID") as! WebViewController
-        controller.url = url
-        self.navigationController?.pushViewController(controller, animated: true)
-
+    func showUrlInExternalWebKitBrowser(url: String) {
+        if let url = NSURL(string: url) {
+            if UIApplication.sharedApplication().openURL(url) {
+                print("url successfully opened")
+            }
+        } else {
+            print("invalid url")
+        }
     }
 }

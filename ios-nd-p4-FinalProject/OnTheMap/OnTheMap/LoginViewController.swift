@@ -65,7 +65,7 @@ class LoginViewController: UIViewController {
                         }
                     }
                     
-                    // get student locations from Parse
+                    // get position from Parse
                     
                     Positions.sharedInstance().positions.removeAll(keepCapacity: false)
                     Positions.sharedInstance().getPositions(0) { success, errorString in

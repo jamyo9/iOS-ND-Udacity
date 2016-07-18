@@ -10,23 +10,39 @@ import Foundation
 import UIKit
 
 struct Position {
+    var objectId = ""
+    var uniqueKey = ""
     var firstName = ""
     var lastName = ""
     var mediaURL = ""
     var latitude = 0.0
     var longitude = 0.0
-    var date = NSDate()
+    var createdAt = ""
+    var mapString: String! = ""
+    var updatedAt = ""
     
     init () {
+        self.objectId = ""
+        self.uniqueKey = ""
         self.firstName = ""
         self.lastName = ""
         self.mediaURL = ""
         self.latitude = 0.0
         self.longitude = 0.0
-        self.date = NSDate()
+        self.createdAt = ""
+        self.mapString = ""
+        self.updatedAt = ""
     }
     
     init (dictionary: [String:AnyObject]) {
+        if let objectId = dictionary["objectId"] as? String {
+            self.objectId = objectId
+        }
+        
+        if let uniqueKey = dictionary["uniqueKey"] as? String {
+            self.uniqueKey = uniqueKey
+        }
+        
         if let firstName = dictionary["firstName"] as? String {
             self.firstName = firstName
         }
@@ -47,8 +63,16 @@ struct Position {
             self.longitude = longitude
         }
         
-        if let date = dictionary["date"] as? NSDate {
-            self.date = date
+        if let createdAt = dictionary["createdAt"] as? String {
+            self.createdAt = createdAt
+        }
+        
+        if let mapString = dictionary["mapString"] as? String {
+            self.mapString = mapString
+        }
+        
+        if let updatedAt = dictionary["updatedAt"] as? String {
+            self.updatedAt = updatedAt
         }
     }
 }

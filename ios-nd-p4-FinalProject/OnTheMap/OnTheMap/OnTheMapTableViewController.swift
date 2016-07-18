@@ -10,6 +10,8 @@ class OnTheMapTableViewController: UITableViewController {
     /* a reference to the studentLocations singleton */
     let positions = Positions.sharedInstance()
     
+    @IBOutlet var table: UITableView!
+    
     // Override functions
     
     override func viewWillAppear(animated: Bool) {
@@ -17,6 +19,8 @@ class OnTheMapTableViewController: UITableViewController {
         tableView.hidden = false
         tableView.reloadData()
         tabBarController?.tabBar.hidden = false
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "reloadTable", name: "", object: nil)
     }
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
@@ -29,7 +33,7 @@ class OnTheMapTableViewController: UITableViewController {
     
     /* Refresh button was selected. */
     @IBAction func onRefreshButtonTap() {
-        // refresh the collection of student locations from Parse
+        // refresh the collection of position from Parse
         positions.reset()
         positions.getPositions(0) { success, errorString in
             if success == false {
@@ -47,6 +51,11 @@ class OnTheMapTableViewController: UITableViewController {
         }
     }
     
+    func reloadTable() {
+        self.table.reloadData()
+    }
+    
+    
     /* Modally present the InfoPosting view controller. */
     func displayInfoPostingViewController() {
         let storyboard = UIStoryboard (name: "Main", bundle: nil)
@@ -54,10 +63,10 @@ class OnTheMapTableViewController: UITableViewController {
         self.presentViewController(controller, animated: true, completion: nil);
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
-        let cell = tableView.dequeueReusableCellWithIdentifier("OnTheMapTableViewCellID", forIndexPath: indexPath) as! OnTheMapTableViewCell
-        let position = self.positions.positions[indexPath.row]
-        cell.label?.text = position.firstName
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("OnTheMapTableViewCell", forIndexPath: indexPath) as UITableViewCell!
+        let pos = positions.positions[indexPath.row]
+        cell.textLabel!.text = pos.firstName + " " + pos.lastName
         return cell
     }
     
@@ -65,12 +74,19 @@ class OnTheMapTableViewController: UITableViewController {
         return self.positions.positions.count
     }
     
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        showUrlInExternalWebKitBrowser(positions.positions[indexPath.row].mediaURL)
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        UIApplication.sharedApplication().openURL(NSURL(string: positions.positions[indexPath.row].mediaURL)!)
+    /* Display url in external Safari browser. */
+    func showUrlInExternalWebKitBrowser(url: String) {
+        if let url = NSURL(string: url) {
+            if UIApplication.sharedApplication().openURL(url) {
+                print("url successfully opened")
+            }
+        } else {
+            print("invalid url")
+        }
     }
     
 }

@@ -16,7 +16,6 @@ class NewPositionStep2ViewController: UIViewController {
     @IBOutlet weak var submitButton: UIButton!
     
     var appDelegate: AppDelegate!
-    var location: String!
     var position: Position!
     
     override func viewDidLoad() {
@@ -41,40 +40,55 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     @IBAction func submitPosition(sender: AnyObject) {
-        self.position.mediaURL = self.linkTextField.text!
-        
-        // SAVE POSITION
-        // URL string is not empty
-        if let pos = position {
-            UdacityClient.sharedInstance().postPosition(pos) {result, error in
-                if error == nil {
-                    self.dismissViewControllerAnimated(true, completion: nil)
-                } else {
-                    // display error message to user
-                    var errorMessage = "error"
-                    if let errorString = error?.localizedDescription {
-                        errorMessage = errorString
+        // CHECK VALID URL
+        let stringWithPossibleURL: String = self.linkTextField.text! // Or another source of text
+        let validURL: NSURL = NSURL(string: stringWithPossibleURL)!
+        if UIApplication.sharedApplication().canOpenURL(validURL) {
+            // Successfully constructed an NSURL; open it
+            self.position.mediaURL = stringWithPossibleURL
+            // SAVE POSITION
+            // URL string is not empty
+            if let pos = position {
+                UdacityClient.sharedInstance().postPosition(pos) {result, error in
+                    if error == nil {
+                        self.presentingViewController?.dismissViewControllerAnimated(true, completion: {
+                            let secondPresentingVC = self.presentingViewController?.presentingViewController;
+                            secondPresentingVC?.dismissViewControllerAnimated(true, completion: {});
+                        })
+                        
+                    } else {
+                        // display error message to user
+                        var errorMessage = "error"
+                        if let errorString = error?.localizedDescription {
+                            errorMessage = errorString
+                        }
+                        //OTMError(viewController:self).displayErrorAlertView("Submit Failed", message: errorMessage)
+                        print(errorMessage)
                     }
-                    //OTMError(viewController:self).displayErrorAlertView("Submit Failed", message: errorMessage)
-                    print("ERROR")
                 }
             }
+            
+            // RETURN TO MAP OR TABLE
+            self.dismissViewControllerAnimated(true, completion: nil)
+            
+        } else {
+            // Initialization failed; alert the user
+            let controller: UIAlertController = UIAlertController(title: "Invalid URL", message: "Please try again. You may need to add the scheme (http:// or https://).", preferredStyle: .Alert)
+            controller.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            self.presentViewController(controller, animated: true, completion: nil)
         }
-        
-        // RETURN TO MAP OR TABLE
-        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func findLocationFromStep1() {
-        if let text = location {
+        if let text = position.mapString {
             forwardGeoCodeLocation(text) { placemark, error in
                 if error == nil {
                     if let placemark = placemark {
                         // place pin on map
                         self.map.addAnnotation(MKPlacemark(placemark: placemark))
                         
-                        // initialize a student location object
-                        self.position = self.createPosition(placemark)
+                        // initialize a position object
+                        self.position = self.updatePosition(placemark)
                         
                         if let position = self.position {
                             self.showPinOnMap(position)
@@ -84,14 +98,14 @@ class NewPositionStep2ViewController: UIViewController {
                         print("ERROR")
                     }
                 } else {
-                    print("ERROR")
+                    print(error?.description)
                 }
             }
         }
     }
     
     func forwardGeoCodeLocation(location: String, completion: (placemark: CLPlacemark?, error: NSError?) -> Void) -> Void {
-        var geoCoder = CLGeocoder()
+        let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(location) { placemarks, error in
             if let placemark = placemarks?[0] as CLPlacemark! {
                 completion(placemark: placemark, error: nil)
@@ -101,18 +115,14 @@ class NewPositionStep2ViewController: UIViewController {
         }
     }
     
-    func createPosition(placemark: CLPlacemark) -> Position {
-        var pos = Position()
-        
-        pos.firstName = self.appDelegate.loggedInPosition!.firstName
-        pos.lastName = self.appDelegate.loggedInPosition!.lastName
-        pos.mediaURL = ""
-        //pos.image = nil
-        pos.latitude = placemark.location!.coordinate.latitude
-        pos.longitude = placemark.location!.coordinate.longitude
-        pos.date = NSDate()
-        
-        return pos
+    func updatePosition(placemark: CLPlacemark) -> Position {
+        self.position.firstName = self.appDelegate.loggedInPosition!.firstName
+        self.position.lastName = self.appDelegate.loggedInPosition!.lastName
+        self.position.mediaURL = ""
+        self.position.latitude = placemark.location!.coordinate.latitude
+        self.position.longitude = placemark.location!.coordinate.longitude
+        self.position.createdAt = parseDate(NSDate())
+        return position
     }
     
     func showPinOnMap(pos: Position) {
@@ -140,4 +150,12 @@ class NewPositionStep2ViewController: UIViewController {
         // Tell the OS that the mapView needs to be refreshed.
         self.map.setNeedsDisplay()
     }
+    
+    func parseDate(date: NSDate) -> String {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let dateStr = dateFormatter.stringFromDate(date)
+        return dateStr
+    }
+    
 }

@@ -24,7 +24,7 @@ class Positions {
     }
     
     /*
-     @brief Get an array of student location dictionaries from Parse and update this object's positions collection.
+     @brief Get an array of position dictionaries from Parse and update this object's positions collection.
      @discussion This function will recursively call itself, retrieving a limitted number of records on each query, until all records have been acquired from the Parse service.
      @param (in) skip - The number of records to skip when reporting results of the query. To obtain all results use 0.
      */
@@ -37,7 +37,7 @@ class Positions {
             if errorString == nil {
                 if let array = arrayOfPositionDictionaries as? [[String: AnyObject]] {
                     
-                    // Update collection of student locations with the new data from Parse.
+                    // Update collection of position with the new data from Parse.
                     for posDictionary in array {
                         // create a StudentLocation object and add it to this object's collection.
                         let studentLoc = Position(dictionary: posDictionary)
@@ -56,7 +56,7 @@ class Positions {
                                     // sort the retrieved array
                                     self.sortList()
                                     
-                                    // Send a notification indicating new student location data has been obtained from Parse.
+                                    // Send a notification indicating new position data has been obtained from Parse.
                                     NSNotificationCenter.defaultCenter().postNotificationName("positionsUpdateNotificationKey", object: self)
                                     
                                     // Fail gracefully by reporting the records that were successfully retrieved prior to the error.
@@ -74,17 +74,17 @@ class Positions {
                             // sort the retrieved array
                             self.sortList()
                             
-                            // Send a notification indicating new student location data has been obtained from Parse.
+                            // Send a notification indicating new position data has been obtained from Parse.
                             NSNotificationCenter.defaultCenter().postNotificationName("positionsUpdateNotificationKey", object: self)
                             
                             completion(result:true, errorString: nil)
                         }
                     }
                     
-                    print("Total student locations: \(self.positions.count)")
+                    print("Total positions: \(self.positions.count)")
                 } else {
                     // Server responded with success, but a nil array. Do not update local positions.
-                    print("new student location data returned a nil array")
+                    print("new position data returned a nil array")
                     completion(result:true, errorString: nil)
                 }
             }
@@ -98,7 +98,7 @@ class Positions {
     /* sort list by date */
     func sortList() {
         self.positions.sortInPlace {
-            $0.date.compare($1.date) == NSComparisonResult.OrderedDescending
+            $0.firstName.localizedCaseInsensitiveCompare($1.firstName) == NSComparisonResult.OrderedDescending
         }
     }
     

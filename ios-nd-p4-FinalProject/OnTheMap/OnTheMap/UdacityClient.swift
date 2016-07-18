@@ -206,9 +206,6 @@ class UdacityClient {
     
     /* Helper: Given a response with error, see if a status_message is returned, otherwise return the previous error */
     class func errorForData(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
-        print(data)
-        print(error)
-        print(response)
         if let parsedResult = (try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)) as? [String : AnyObject] {
             
             if let errorMessage = parsedResult["status_message"] as? String {
@@ -273,6 +270,9 @@ class UdacityClient {
                     if let url = userDictionary["website_url"] as? String{
                         pos.mediaURL = url
                     }
+                    if let key = userDictionary["key"] as? String {
+                        pos.uniqueKey = key
+                    }
                     completionHandler(result: true, position: pos, error: nil)
                 } else {
                     completionHandler(result: false, position: nil, error: error)
@@ -298,11 +298,15 @@ class UdacityClient {
         // create the HTTP body
         // enable parameterized values.
         let jsonBody : [String: AnyObject] = [
+            "uniqueKey" : pos.uniqueKey,
             "firstName" : pos.firstName,
             "lastName" : pos.lastName,
             "mediaURL" : pos.mediaURL,
             "latitude" : pos.latitude,
-            "longitude" : pos.longitude
+            "longitude" : pos.longitude,
+            "createdAt" : pos.createdAt,
+            "updatedAt" : pos.updatedAt,
+            "mapString" : pos.mapString
         ]
         
         /* 2. Make the request */
@@ -328,7 +332,7 @@ class UdacityClient {
         }
     }
     
-    func getPositions(skip: Int, limit: Int, completionHandler: (success: Bool, arrayOfLocationDictionaries: [AnyObject]?, errorString: String?) -> Void) {
+    func getPositions(skip: Int, limit: Int, completionHandler: (success: Bool, arrayOfPositionsDictionaries: [AnyObject]?, errorString: String?) -> Void) {
         
         /* 1. Specify parameters, method (if has {key}) */
         let parameters = [
@@ -348,13 +352,13 @@ class UdacityClient {
             /* 3. Send the desired value(s) to completion handler */
             if let error = error {
                 // Set error string to localizedDescription in error
-                completionHandler(success: false, arrayOfLocationDictionaries: nil, errorString: error.localizedDescription)
+                completionHandler(success: false, arrayOfPositionsDictionaries: nil, errorString: error.localizedDescription)
             } else {
                 // parse the json response which looks like the following:
                 if let arrayOfLocationDicts = JSONResult.valueForKey("results") as? [AnyObject] {
-                    completionHandler(success: true, arrayOfLocationDictionaries: arrayOfLocationDicts, errorString: nil)
+                    completionHandler(success: true, arrayOfPositionsDictionaries: arrayOfLocationDicts, errorString: nil)
                 } else {
-                    completionHandler(success: false, arrayOfLocationDictionaries: nil, errorString: "No results from server.")
+                    completionHandler(success: false, arrayOfPositionsDictionaries: nil, errorString: "No results from server.")
                 }
             }
         }

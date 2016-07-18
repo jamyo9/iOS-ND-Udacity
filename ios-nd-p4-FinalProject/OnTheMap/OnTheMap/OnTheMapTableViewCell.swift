@@ -13,7 +13,7 @@ import UIKit
 class OnTheMapTableViewCell: UITableViewCell {
     
     
-    @IBOutlet weak var pointImage: UIImageView!
+//    @IBOutlet weak var pointImage: UIImageView!
     @IBOutlet weak var label: UILabel!
     
     var position:Position! {
