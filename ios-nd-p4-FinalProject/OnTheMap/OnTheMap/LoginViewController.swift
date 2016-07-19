@@ -2,9 +2,6 @@
 //  LoginViewController.swift
 //  OnTheMap
 //
-//  Created by Jarrod Parkes on 1/23/15.
-//  Copyright (c) 2015 Udacity. All rights reserved.
-//
 
 import UIKit
 
@@ -51,17 +48,15 @@ class LoginViewController: UIViewController {
             UdacityClient.sharedInstance().loginUdacity(username, password: password) {result, accountKey, error in
                 if error == nil {
                     self.appDelegate.loggedIn = true
-                    // Get the logged in user's data from the Udacity service and store the relevant elements in a studentLocation variable for retrieval later when we post the user's data to Parse.
+                    // Get the logged in user's data from the Udacity service and store the relevant elements in a position variable for retrieval later when we post the user's data to Parse.
                     self.getLoggedInUserData(accountKey) { success, position, error in
                         if error == nil {
                             // got valid user data back, so save it
                             self.appDelegate.loggedInPosition = position
-                            
-                            
                         } else {
-                            print(error)
-                            // didn't get valid data back so set to default values
-                            self.appDelegate.loggedInPosition = Position()
+                            dispatch_async(dispatch_get_main_queue(),{
+                                self.showError(error!.localizedDescription)
+                            })
                         }
                     }
                     
@@ -72,26 +67,18 @@ class LoginViewController: UIViewController {
                         if success == false {
                             //if let errorString = errorString {
                             if errorString != nil {
-                                print("ERROR")
-                                //OTMError(viewController:self).displayErrorAlertView("Error retrieving Locations", message: errorString)
-                            } else {
-                                print("ERROR")
-                                //OTMError(viewController:self).displayErrorAlertView("Error retrieving Locations", message: "Unknown error")
+                                dispatch_async(dispatch_get_main_queue(),{
+                                    self.showError(errorString!)
+                                })
                             }
-                        } else {
-                            // successfully logged in - save the user's account key
-                            self.presentMapController()
                         }
                     }
-                    
                     self.presentMapController()
                 } else {
                     self.appDelegate.loggedIn = false
-                    dispatch_async(dispatch_get_main_queue()) {
-//                        self.stopActivityIndicator()
-//                        self.parseLoginError(error!)
-//                        OTMError(viewController:self).displayErrorAlertView("Login Error", message: error!.localizedDescription)
-                    }
+                    dispatch_async(dispatch_get_main_queue(),{
+                        self.showError(error!.localizedDescription)
+                    })
                 }
             }
         }
@@ -107,14 +94,13 @@ class LoginViewController: UIViewController {
         }
     }
     
-    func getLoggedInUserData(userAccountKey: String, completion: (success: Bool, studentLocation: Position?, error: NSError?) -> Void) {
-        UdacityClient.sharedInstance().getUdacityUser(userAccountKey) { result, studentLocation, error in
+    func getLoggedInUserData(userAccountKey: String, completion: (success: Bool, position: Position?, error: NSError?) -> Void) {
+        UdacityClient.sharedInstance().getUdacityUser(userAccountKey) { result, pos, error in
             if error == nil {
-                completion(success: true, studentLocation: studentLocation, error: nil)
+                completion(success: true, position: pos, error: nil)
             }
             else {
-                print("error getUdacityUser()")
-                completion(success: false, studentLocation: nil, error: error)
+                completion(success: false, position: nil, error: error)
             }
         }
     }
@@ -213,6 +199,33 @@ extension LoginViewController {
         textField.attributedPlaceholder = NSAttributedString(string: textField.placeholder!, attributes: [NSForegroundColorAttributeName: UIColor.whiteColor()])
         //textField.tintColor = Constants.UI.BlueColor
         textField.delegate = self
+    }
+    
+    // FROM https://github.com/pbellot77/On-The-Map
+    func showError(errorString: String){
+        let titleString = "Authentication failed!"
+        var errorString = errorString
+        
+        if errorString.rangeOfString("400") != nil{
+            errorString = "Please enter your email address and password."
+        } else if errorString.rangeOfString("403")  != nil {
+            errorString = "Wrong email address or password entered."
+        } else if errorString.rangeOfString("1009") != nil {
+            errorString = "Something is wrong with the network connection."
+        }
+        
+        showAlert(titleString, alertMessage: errorString, actionTitle: "Try again")
+    }
+    
+    //Function that configures and shows an alert
+    func showAlert(alertTitle: String, alertMessage: String, actionTitle: String){
+        
+        /* Configure the alert view to display the error */
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: actionTitle, style: .Default, handler: nil))
+        
+        /* Present the alert view */
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 }
 

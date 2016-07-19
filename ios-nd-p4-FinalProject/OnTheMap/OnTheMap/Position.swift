@@ -17,7 +17,7 @@ struct Position {
     var mediaURL = ""
     var latitude = 0.0
     var longitude = 0.0
-    var createdAt = ""
+    var createdAt = NSDate()
     var mapString: String! = ""
     var updatedAt = ""
     
@@ -29,7 +29,7 @@ struct Position {
         self.mediaURL = ""
         self.latitude = 0.0
         self.longitude = 0.0
-        self.createdAt = ""
+        self.createdAt = NSDate()
         self.mapString = ""
         self.updatedAt = ""
     }
@@ -63,7 +63,7 @@ struct Position {
             self.longitude = longitude
         }
         
-        if let createdAt = dictionary["createdAt"] as? String {
+        if let createdAt = dictionary["createdAt"] as? NSDate {
             self.createdAt = createdAt
         }
         

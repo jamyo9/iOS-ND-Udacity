@@ -7,7 +7,7 @@ import UIKit
 
 class OnTheMapTableViewController: UITableViewController {
     
-    /* a reference to the studentLocations singleton */
+    /* a reference to the positions singleton */
     let positions = Positions.sharedInstance()
     
     @IBOutlet var table: UITableView!
@@ -20,7 +20,7 @@ class OnTheMapTableViewController: UITableViewController {
         tableView.reloadData()
         tabBarController?.tabBar.hidden = false
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "reloadTable", name: "", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(OnTheMapTableViewController.reloadTable), name: "", object: nil)
     }
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
@@ -40,10 +40,8 @@ class OnTheMapTableViewController: UITableViewController {
                 //if let errorString = errorString {
                 if errorString != nil {
                     print("ERROR")
-                    //OTMError(viewController:self).displayErrorAlertView("Error retrieving Locations", message: errorString)
                 } else {
                     print("ERROR")
-                    //OTMError(viewController:self).displayErrorAlertView("Error retrieving Locations", message: "Unknown error")
                 }
             } else {
                 self.tableView.reloadData()

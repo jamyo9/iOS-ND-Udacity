@@ -35,11 +35,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         // Add a notification observer for updates to position data from Parse.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MapViewController.onPositionsUpdate), name: "positionsUpdateNotificationKey", object: nil)
         
-        // Clear any existing pins before redrawing them (e.g. if navigating back to the map view from the InfoPosting view.)
-        removeAllPins()
-        
-        // Draw the pins now (as it is conceivable that the notification arrived prior to the observer being registered.)
-        createPins()
+//        // Clear any existing pins before redrawing them (e.g. if navigating back to the map view from the InfoPosting view.)
+//        removeAllPins()
+//        // Draw the pins now (as it is conceivable that the notification arrived prior to the observer being registered.)
+//        createPins()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -59,7 +58,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Remove observer for the studentLocations update notification.
+        // Remove observer for the positions update notification.
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
@@ -84,10 +83,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 //if let errorString = errorString {
                 if errorString != nil {
                     print("ERROR")
-                    //OTMError(viewController:self).displayErrorAlertView("Error retrieving Locations", message: errorString)
                 } else {
                     print("ERROR")
-                    //OTMError(viewController:self).displayErrorAlertView("Error retrieving Locations", message: "Unknown error")
                 }
             } else {
                 self.removeAllPins()
@@ -102,16 +99,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: Manage map annotations
     
-    /* Create an annotation for each studentLocation and display them on the map */
+    /* Create an annotation for each position and display them on the map */
     func createPins() {
         
         // A collection of point annotations to be displayed on the map view
         var pins = [MKPointAnnotation]()
         
-        // Create an annotation for each location dictionary in studentLocations
+        // Create an annotation for each location dictionary in positions
         for position in positions.positions {
             
-            // get latitude and longitude from studentLocation and save as CCLocationDegree type (a Double type)
+            // get latitude and longitude from position and save as CCLocationDegree type (a Double type)
             let lat = CLLocationDegrees(position.latitude as Double)
             let long = CLLocationDegrees(position.longitude as Double)
             
@@ -186,7 +183,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: Helper functions
     
-    /* Received a notification that studentLocations have been updated with new data from Parse. Recreate the pins for all locations. */
+    /* Received a notification that positions have been updated with new data from Parse. Recreate the pins for all locations. */
     func onPositionsUpdate() {
         // clear the pins
         removeAllPins()

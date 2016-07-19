@@ -40,46 +40,47 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     @IBAction func submitPosition(sender: AnyObject) {
+        print("submitPosition")
         // CHECK VALID URL
         let stringWithPossibleURL: String = self.linkTextField.text! // Or another source of text
         let validURL: NSURL = NSURL(string: stringWithPossibleURL)!
-        if UIApplication.sharedApplication().canOpenURL(validURL) {
-            // Successfully constructed an NSURL; open it
-            self.position.mediaURL = stringWithPossibleURL
-            // SAVE POSITION
-            // URL string is not empty
-            if let pos = position {
-                UdacityClient.sharedInstance().postPosition(pos) {result, error in
-                    if error == nil {
-                        self.presentingViewController?.dismissViewControllerAnimated(true, completion: {
-                            let secondPresentingVC = self.presentingViewController?.presentingViewController;
-                            secondPresentingVC?.dismissViewControllerAnimated(true, completion: {});
-                        })
-                        
-                    } else {
-                        // display error message to user
-                        var errorMessage = "error"
-                        if let errorString = error?.localizedDescription {
-                            errorMessage = errorString
+        if stringWithPossibleURL.isEmpty {
+            self.showError("02", errorMessage: "")
+        } else {
+            if UIApplication.sharedApplication().canOpenURL(validURL) {
+                // Successfully constructed an NSURL; open it
+                self.position.mediaURL = stringWithPossibleURL
+                // SAVE POSITION
+                // URL string is not empty
+                if let pos = position {
+                    UdacityClient.sharedInstance().postPosition(pos) {result, error in
+                        if error != nil {
+                            // display error message to user
+                            var errorMessage = "error"
+                            if let errorString = error?.localizedDescription {
+                                errorMessage = errorString
+                            }
+                            self.showError("03", errorMessage: errorMessage)
                         }
-                        //OTMError(viewController:self).displayErrorAlertView("Submit Failed", message: errorMessage)
-                        print(errorMessage)
                     }
                 }
+                print("22222")
+                // RETURN TO MAP OR TABLE
+                //self.dismissViewControllerAnimated(true, completion: nil)
+                self.presentingViewController?.dismissViewControllerAnimated(true, completion: {
+                    let secondPresentingVC = self.presentingViewController?.presentingViewController;
+                    secondPresentingVC?.dismissViewControllerAnimated(true, completion: {});
+                })
+            
+            } else {
+                // Initialization failed; alert the user
+                self.showError("01", errorMessage: "")
             }
-            
-            // RETURN TO MAP OR TABLE
-            self.dismissViewControllerAnimated(true, completion: nil)
-            
-        } else {
-            // Initialization failed; alert the user
-            let controller: UIAlertController = UIAlertController(title: "Invalid URL", message: "Please try again. You may need to add the scheme (http:// or https://).", preferredStyle: .Alert)
-            controller.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-            self.presentViewController(controller, animated: true, completion: nil)
         }
     }
     
     func findLocationFromStep1() {
+        print("findLocationFromStep1")
         if let text = position.mapString {
             forwardGeoCodeLocation(text) { placemark, error in
                 if error == nil {
@@ -105,6 +106,7 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     func forwardGeoCodeLocation(location: String, completion: (placemark: CLPlacemark?, error: NSError?) -> Void) -> Void {
+        print("forwardGeoCodeLocation")
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(location) { placemarks, error in
             if let placemark = placemarks?[0] as CLPlacemark! {
@@ -116,17 +118,18 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     func updatePosition(placemark: CLPlacemark) -> Position {
+        print("updatePosition")
         self.position.firstName = self.appDelegate.loggedInPosition!.firstName
         self.position.lastName = self.appDelegate.loggedInPosition!.lastName
         self.position.mediaURL = ""
         self.position.latitude = placemark.location!.coordinate.latitude
         self.position.longitude = placemark.location!.coordinate.longitude
-        self.position.createdAt = parseDate(NSDate())
+        self.position.updatedAt = parseDate(NSDate())
         return position
     }
     
     func showPinOnMap(pos: Position) {
-        
+        print("showPinOnMap")
         // The lat and long are used to create a CLLocationCoordinates2D instance.
         let coordinate = CLLocationCoordinate2D(latitude: pos.latitude, longitude: pos.longitude )
         
@@ -156,6 +159,32 @@ class NewPositionStep2ViewController: UIViewController {
         dateFormatter.dateFormat = "dd-MM-yyyy"
         let dateStr = dateFormatter.stringFromDate(date)
         return dateStr
+    }
+    
+    func showError(errorCode: String, errorMessage: String?){
+        let titleString = "Invalid URL"
+        var errorString = ""
+        
+        if errorCode.rangeOfString("01") != nil{
+            errorString = "Please try again. You may need to add the scheme (http:// or https://)."
+        } else if errorCode.rangeOfString("02")  != nil {
+            errorString = "Please try again. The URL is empty."
+        } else if errorCode.rangeOfString("03") != nil {
+            errorString = errorMessage!
+        }
+        
+        showAlert(titleString, alertMessage: errorString, actionTitle: "Try again")
+    }
+    
+    //Function that configures and shows an alert
+    func showAlert(alertTitle: String, alertMessage: String, actionTitle: String){
+        
+        /* Configure the alert view to display the error */
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: actionTitle, style: .Default, handler: nil))
+        
+        /* Present the alert view */
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
 }

@@ -3,7 +3,7 @@ import Foundation
 
 class Positions {
     
-    /* An array of StudentLocation objects where each describes the location of a student.*/
+    /* An array of position objects where each describes the location of a student.*/
     var positions = [Position]()
     
     /* This class is instantiated as a Singleton. This function returns the singleton instance. */
@@ -17,7 +17,7 @@ class Positions {
     }
     
     /*
-     @brief Empty this object's collection of studentLocation objects.
+     @brief Empty this object's collection of position objects.
      */
     func reset() {
         positions.removeAll(keepCapacity: false)
@@ -39,7 +39,7 @@ class Positions {
                     
                     // Update collection of position with the new data from Parse.
                     for posDictionary in array {
-                        // create a StudentLocation object and add it to this object's collection.
+                        // create a position object and add it to this object's collection.
                         let studentLoc = Position(dictionary: posDictionary)
                         self.positions.append(studentLoc)
                     }

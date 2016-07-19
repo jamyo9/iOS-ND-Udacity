@@ -206,16 +206,15 @@ class UdacityClient {
     
     /* Helper: Given a response with error, see if a status_message is returned, otherwise return the previous error */
     class func errorForData(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
-        if let parsedResult = (try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)) as? [String : AnyObject] {
-            
-            if let errorMessage = parsedResult["status_message"] as? String {
-                
-                let userInfo = [NSLocalizedDescriptionKey : errorMessage]
-                
-                return NSError(domain: "REST service Error", code: 1, userInfo: userInfo)
-            }
-        }
-        
+//        if let parsedResult = (try? NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)) as? [String : AnyObject] {
+//            
+//            if let errorMessage = parsedResult["status_message"] as? String {
+//                
+//                let userInfo = [NSLocalizedDescriptionKey : errorMessage]
+//                
+//                return NSError(domain: "REST service Error", code: 1, userInfo: userInfo)
+//            }
+//        }
         return error
     }
     

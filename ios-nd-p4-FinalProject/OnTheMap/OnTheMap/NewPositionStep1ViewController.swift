@@ -51,15 +51,8 @@ class NewPositionStep1ViewController: UIViewController {
         pos.lastName = self.appDelegate.loggedInPosition!.lastName
         pos.mediaURL = ""
         pos.mapString = mapString
-        pos.createdAt = parseDate(NSDate())
+        pos.createdAt = NSDate()
         pos.updatedAt = ""
         return pos
-    }
-    
-    func parseDate(date: NSDate) -> String {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy"
-        let dateStr = dateFormatter.stringFromDate(date)
-        return dateStr
     }
 }
