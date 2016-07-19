@@ -16,7 +16,8 @@ class NewPositionStep1ViewController: UIViewController {
     @IBOutlet weak var findButton: UIButton!
     
     var appDelegate: AppDelegate!
-
+//    var positionCreated: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -45,14 +46,13 @@ class NewPositionStep1ViewController: UIViewController {
     
     func createPosition(mapString: String) -> Position {
         var pos = Position()
-        //self.objectId = ""
-        //self.uniqueKey = 0
+        pos.uniqueKey = self.appDelegate.loggedInPosition!.uniqueKey
         pos.firstName = self.appDelegate.loggedInPosition!.firstName
         pos.lastName = self.appDelegate.loggedInPosition!.lastName
         pos.mediaURL = ""
         pos.mapString = mapString
         pos.createdAt = NSDate()
-        pos.updatedAt = ""
+        pos.updatedAt = NSDate()
         return pos
     }
 }

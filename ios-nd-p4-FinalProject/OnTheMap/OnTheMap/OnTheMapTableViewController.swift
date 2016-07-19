@@ -10,6 +10,8 @@ class OnTheMapTableViewController: UITableViewController {
     /* a reference to the positions singleton */
     let positions = Positions.sharedInstance()
     
+    var appDelegate: AppDelegate!
+    
     @IBOutlet var table: UITableView!
     
     // Override functions
@@ -21,6 +23,11 @@ class OnTheMapTableViewController: UITableViewController {
         tabBarController?.tabBar.hidden = false
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(OnTheMapTableViewController.reloadTable), name: "", object: nil)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     }
     
     override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
@@ -47,6 +54,12 @@ class OnTheMapTableViewController: UITableViewController {
                 self.tableView.reloadData()
             }
         }
+    }
+    
+    @IBAction func logoutAction(sender: AnyObject) {
+        self.appDelegate.loggedIn = false
+        self.appDelegate.loggedInPosition = nil
+        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func reloadTable() {

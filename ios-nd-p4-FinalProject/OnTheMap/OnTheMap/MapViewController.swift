@@ -34,11 +34,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         // Add a notification observer for updates to position data from Parse.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MapViewController.onPositionsUpdate), name: "positionsUpdateNotificationKey", object: nil)
-        
-//        // Clear any existing pins before redrawing them (e.g. if navigating back to the map view from the InfoPosting view.)
-//        removeAllPins()
-//        // Draw the pins now (as it is conceivable that the notification arrived prior to the observer being registered.)
-//        createPins()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -49,7 +44,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         if delegate.loggedIn == false {
             displayLoginViewController()
         }
-        
         dispatch_async(dispatch_get_main_queue()) {
             self.mapView.setNeedsDisplay()
         }
@@ -77,15 +71,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     /* Refresh button was selected. */
     @IBAction func onRefreshButtonTap() {
         // refresh the collection of position from Parse
+        
         positions.reset()
         positions.getPositions(0) { success, errorString in
             if success == false {
                 //if let errorString = errorString {
-                if errorString != nil {
-                    print("ERROR")
-                } else {
-                    print("ERROR")
-                }
+                print("ERROR")
             } else {
                 self.removeAllPins()
                 self.createPins()
@@ -95,6 +86,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         dispatch_async(dispatch_get_main_queue()) {
             self.mapView.setNeedsDisplay()
         }
+    }
+    
+    @IBAction func logoutAction(sender: AnyObject) {
+        self.appDelegate.loggedIn = false
+        self.appDelegate.loggedInPosition = nil
+        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
     // MARK: Manage map annotations
@@ -132,17 +129,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         // Add the annotations to the map.
         self.mapView.addAnnotations(pins)
-        
         self.mapView.setNeedsDisplay()
+        self.mapView.showAnnotations(pins, animated: true)
     }
     
     /*
      @brief - Remove all annotations from the MKMapView.
-     Acknowledgement:  nielsbot, SO for filter technique to remove all but users current location.
      */
     func removeAllPins() {
-        let annotationsToRemove = self.mapView.annotations.filter { $0 !== self.mapView.userLocation }
-        self.mapView.removeAnnotations( annotationsToRemove )
+        self.mapView.removeAnnotations( self.mapView.annotations )
     }
     
     
@@ -150,7 +145,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Create an accessory view for the pin annotation callout when it is added to the map view
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        
         let reuseId = "pin"
         
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
@@ -161,8 +155,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             pinView!.pinTintColor = UIColor.redColor()
             pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)  // DetailDisclosure, InfoLight, InfoDark, ContactAdd
             pinView!.animatesDrop = true
-        }
-        else {
+        } else {
             pinView!.annotation = annotation
         }
         
@@ -209,20 +202,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let controller = storyboard.instantiateViewControllerWithIdentifier("NewPositionStep1StoryboardID") as! NewPositionStep1ViewController
         self.presentViewController(controller, animated: true, completion: nil);
     }
-    
-    /* show activity indicator */
-//    func startActivityIndicator() {
-//        activityIndicator.center = self.view.center
-//        activityIndicator.hidesWhenStopped = true
-//        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
-//        view.addSubview(activityIndicator)
-//        activityIndicator.startAnimating()
-//    }
-    
-    /* hide acitivity indicator */
-//    func stopActivityIndicator() {
-//        activityIndicator.stopAnimating()
-//    }
     
     /* Display url in external Safari browser. */
     func showUrlInExternalWebKitBrowser(url: String) {

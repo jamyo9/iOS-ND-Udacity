@@ -271,6 +271,8 @@ class UdacityClient {
                     }
                     if let key = userDictionary["key"] as? String {
                         pos.uniqueKey = key
+                    } else {
+                        pos.uniqueKey = userID
                     }
                     completionHandler(result: true, position: pos, error: nil)
                 } else {
@@ -303,8 +305,8 @@ class UdacityClient {
             "mediaURL" : pos.mediaURL,
             "latitude" : pos.latitude,
             "longitude" : pos.longitude,
-            "createdAt" : pos.createdAt,
-            "updatedAt" : pos.updatedAt,
+//            "createdAt" : self.parseDate(pos.createdAt),
+//            "updatedAt" : pos.updatedAt,
             "mapString" : pos.mapString
         ]
         
@@ -361,5 +363,12 @@ class UdacityClient {
                 }
             }
         }
+    }
+    
+    func parseDate(date: NSDate) -> String {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        let dateStr = dateFormatter.stringFromDate(date)
+        return dateStr
     }
 }

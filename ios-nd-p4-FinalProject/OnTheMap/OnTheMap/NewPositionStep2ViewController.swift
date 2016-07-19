@@ -45,7 +45,9 @@ class NewPositionStep2ViewController: UIViewController {
         let stringWithPossibleURL: String = self.linkTextField.text! // Or another source of text
         let validURL: NSURL = NSURL(string: stringWithPossibleURL)!
         if stringWithPossibleURL.isEmpty {
-            self.showError("02", errorMessage: "")
+            dispatch_async(dispatch_get_main_queue(),{
+                self.showError("02", errorMessage: "")
+            })
         } else {
             if UIApplication.sharedApplication().canOpenURL(validURL) {
                 // Successfully constructed an NSURL; open it
@@ -55,26 +57,25 @@ class NewPositionStep2ViewController: UIViewController {
                 if let pos = position {
                     UdacityClient.sharedInstance().postPosition(pos) {result, error in
                         if error != nil {
+                            print(error)
                             // display error message to user
                             var errorMessage = "error"
                             if let errorString = error?.localizedDescription {
                                 errorMessage = errorString
                             }
-                            self.showError("03", errorMessage: errorMessage)
+                            dispatch_async(dispatch_get_main_queue(),{
+                                self.showError("03", errorMessage: errorMessage)
+                            })
                         }
                     }
                 }
-                print("22222")
-                // RETURN TO MAP OR TABLE
-                //self.dismissViewControllerAnimated(true, completion: nil)
-                self.presentingViewController?.dismissViewControllerAnimated(true, completion: {
-                    let secondPresentingVC = self.presentingViewController?.presentingViewController;
-                    secondPresentingVC?.dismissViewControllerAnimated(true, completion: {});
-                })
-            
+                // RETURN TO MAP OR TABLE    
+                self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             } else {
-                // Initialization failed; alert the user
-                self.showError("01", errorMessage: "")
+                dispatch_async(dispatch_get_main_queue(),{
+                    // Initialization failed; alert the user
+                    self.showError("01", errorMessage: "")
+                })
             }
         }
     }
@@ -124,7 +125,7 @@ class NewPositionStep2ViewController: UIViewController {
         self.position.mediaURL = ""
         self.position.latitude = placemark.location!.coordinate.latitude
         self.position.longitude = placemark.location!.coordinate.longitude
-        self.position.updatedAt = parseDate(NSDate())
+        self.position.updatedAt = NSDate()
         return position
     }
     
@@ -152,13 +153,6 @@ class NewPositionStep2ViewController: UIViewController {
         
         // Tell the OS that the mapView needs to be refreshed.
         self.map.setNeedsDisplay()
-    }
-    
-    func parseDate(date: NSDate) -> String {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy"
-        let dateStr = dateFormatter.stringFromDate(date)
-        return dateStr
     }
     
     func showError(errorCode: String, errorMessage: String?){

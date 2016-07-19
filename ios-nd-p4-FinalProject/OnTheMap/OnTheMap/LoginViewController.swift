@@ -54,9 +54,7 @@ class LoginViewController: UIViewController {
                             // got valid user data back, so save it
                             self.appDelegate.loggedInPosition = position
                         } else {
-                            dispatch_async(dispatch_get_main_queue(),{
-                                self.showError(error!.localizedDescription)
-                            })
+                            self.appDelegate.loggedInPosition = Position()
                         }
                     }
                     

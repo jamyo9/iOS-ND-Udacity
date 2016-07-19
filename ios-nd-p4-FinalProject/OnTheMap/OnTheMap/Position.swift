@@ -19,7 +19,7 @@ struct Position {
     var longitude = 0.0
     var createdAt = NSDate()
     var mapString: String! = ""
-    var updatedAt = ""
+    var updatedAt = NSDate()
     
     init () {
         self.objectId = ""
@@ -31,7 +31,7 @@ struct Position {
         self.longitude = 0.0
         self.createdAt = NSDate()
         self.mapString = ""
-        self.updatedAt = ""
+        self.updatedAt = NSDate()
     }
     
     init (dictionary: [String:AnyObject]) {
@@ -71,7 +71,7 @@ struct Position {
             self.mapString = mapString
         }
         
-        if let updatedAt = dictionary["updatedAt"] as? String {
+        if let updatedAt = dictionary["updatedAt"] as? NSDate {
             self.updatedAt = updatedAt
         }
     }
