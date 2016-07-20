@@ -75,6 +75,29 @@ class UdacityClient {
         }
     }
     
+    func logoutUdacity(completionHandler: (result: Bool, error: NSError?) -> Void) {
+        let sessionUrl = UdacityConstants.udacityBaseURL + UdacityConstants.udacitySessionMethod
+        let request = NSMutableURLRequest(URL: NSURL(string: sessionUrl)!)
+        request.HTTPMethod = "DELETE"
+        var xsrfCookie: NSHTTPCookie? = nil
+        let sharedCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        for cookie in sharedCookieStorage.cookies! {
+            if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
+        }
+        if let xsrfCookie = xsrfCookie {
+            request.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
+        }
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            if error != nil {
+                return
+            }
+            let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5))
+            print(NSString(data: newData, encoding: NSUTF8StringEncoding))
+        }
+        task.resume()
+    }
+    
     /* Create a task to send an HTTP Post request */
     func taskForPOSTMethod(apiKey: String, baseUrl: String, method: String, headerParameters: [String : AnyObject]?, queryParameters: [String : AnyObject]?, jsonBody: [String:AnyObject], completionHandler: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
         
@@ -238,7 +261,7 @@ class UdacityClient {
         }
     }
     
-    func getUdacityUser(userID: String, completionHandler: (result: Bool, position: Position?, error: NSError?) -> Void) {
+    func getUdacityUser(userID: String, completionHandler: (result: Bool, position: StudentInformation?, error: NSError?) -> Void) {
         
         /* 1. Specify parameters */
         // none
@@ -258,7 +281,7 @@ class UdacityClient {
                 completionHandler(result: false, position: nil, error: error)
             } else {
                 // parse the json response which looks like the following:
-                var pos = Position()
+                var pos = StudentInformation()
                 if let userDictionary = JSONResult.valueForKey("user") as? [String: AnyObject] {
                     if let lastName = userDictionary["last_name"] as? String {
                         pos.lastName = lastName
@@ -282,7 +305,7 @@ class UdacityClient {
         }
     }
     
-    func postPosition(pos: Position, completionHandler: (result: Bool, error: NSError?) -> Void) {
+    func postPosition(pos: StudentInformation, completionHandler: (result: Bool, error: NSError?) -> Void) {
         
         /* 1. Specify parameters, method (if has {key}) */
         // none
@@ -305,8 +328,6 @@ class UdacityClient {
             "mediaURL" : pos.mediaURL,
             "latitude" : pos.latitude,
             "longitude" : pos.longitude,
-//            "createdAt" : self.parseDate(pos.createdAt),
-//            "updatedAt" : pos.updatedAt,
             "mapString" : pos.mapString
         ]
         
@@ -338,7 +359,8 @@ class UdacityClient {
         /* 1. Specify parameters, method (if has {key}) */
         let parameters = [
             "limit" : String(limit),
-            "skip" : String(skip)
+            "skip" : String(skip),
+            "order": "-updatedAt"
         ]
         
         // set up http header parameters

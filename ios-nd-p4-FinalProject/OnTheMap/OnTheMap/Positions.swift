@@ -4,7 +4,7 @@ import Foundation
 class Positions {
     
     /* An array of position objects where each describes the location of a student.*/
-    var positions = [Position]()
+    var positions = [StudentInformation]()
     
     /* This class is instantiated as a Singleton. This function returns the singleton instance. */
     class func sharedInstance() -> Positions {
@@ -40,7 +40,7 @@ class Positions {
                     // Update collection of position with the new data from Parse.
                     for posDictionary in array {
                         // create a position object and add it to this object's collection.
-                        let studentLoc = Position(dictionary: posDictionary)
+                        let studentLoc = StudentInformation(dictionary: posDictionary)
                         self.positions.append(studentLoc)
                     }
                     
@@ -98,7 +98,7 @@ class Positions {
     /* sort list by date */
     func sortList() {
         self.positions.sortInPlace {
-            $0.firstName.localizedCaseInsensitiveCompare($1.firstName) == NSComparisonResult.OrderedDescending
+            $0.updatedAt.compare($1.updatedAt) == NSComparisonResult.OrderedAscending
         }
     }
     

@@ -12,7 +12,7 @@
 		E92EA8A91D339F2500CC9D0E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E92EA8A81D339F2500CC9D0E /* Assets.xcassets */; };
 		E92EA8AC1D339F2500CC9D0E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E92EA8AA1D339F2500CC9D0E /* LaunchScreen.storyboard */; };
 		E92EA8B41D339F9D00CC9D0E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E92EA8B31D339F9D00CC9D0E /* Main.storyboard */; };
-		E92EA8BB1D33A50500CC9D0E /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8BA1D33A50500CC9D0E /* Position.swift */; };
+		E92EA8BB1D33A50500CC9D0E /* StudentInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8BA1D33A50500CC9D0E /* StudentInformation.swift */; };
 		E92EA8BD1D33A60100CC9D0E /* OnTheMapTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8BC1D33A60100CC9D0E /* OnTheMapTableViewController.swift */; };
 		E92EA8C11D33A8D100CC9D0E /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8C01D33A8D100CC9D0E /* LoginViewController.swift */; };
 		E92EA8C31D33AB5200CC9D0E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8C21D33AB5200CC9D0E /* MapViewController.swift */; };
@@ -32,7 +32,7 @@
 		E92EA8AB1D339F2500CC9D0E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E92EA8AD1D339F2500CC9D0E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E92EA8B31D339F9D00CC9D0E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		E92EA8BA1D33A50500CC9D0E /* Position.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
+		E92EA8BA1D33A50500CC9D0E /* StudentInformation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StudentInformation.swift; path = OnTheMap/StudentInformation.swift; sourceTree = SOURCE_ROOT; };
 		E92EA8BC1D33A60100CC9D0E /* OnTheMapTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnTheMapTableViewController.swift; sourceTree = "<group>"; };
 		E92EA8C01D33A8D100CC9D0E /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		E92EA8C21D33AB5200CC9D0E /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -105,7 +105,7 @@
 		E92EA8B61D33A3C600CC9D0E /* Objects */ = {
 			isa = PBXGroup;
 			children = (
-				E92EA8BA1D33A50500CC9D0E /* Position.swift */,
+				E92EA8BA1D33A50500CC9D0E /* StudentInformation.swift */,
 				E92EA8C41D33AE3C00CC9D0E /* Positions.swift */,
 			);
 			name = Objects;
@@ -212,7 +212,7 @@
 				E92EA8C11D33A8D100CC9D0E /* LoginViewController.swift in Sources */,
 				E92EA8CA1D33B9A300CC9D0E /* UdacityConstants.swift in Sources */,
 				E92561741D37AE3C007F545D /* NewPositionStep2ViewController.swift in Sources */,
-				E92EA8BB1D33A50500CC9D0E /* Position.swift in Sources */,
+				E92EA8BB1D33A50500CC9D0E /* StudentInformation.swift in Sources */,
 				E9F4EB6B1D34F5A600854AFA /* NewPositionStep1ViewController.swift in Sources */,
 				E92EA8BD1D33A60100CC9D0E /* OnTheMapTableViewController.swift in Sources */,
 				E92EA8C51D33AE3C00CC9D0E /* Positions.swift in Sources */,

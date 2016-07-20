@@ -1,5 +1,5 @@
 //
-//  Position.swift
+//  StudentInformation.swift
 //  OnTheMap
 //
 //  Created by Juan Alvarez on 14/6/16.
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-struct Position {
+struct StudentInformation {
     var objectId = ""
     var uniqueKey = ""
     var firstName = ""

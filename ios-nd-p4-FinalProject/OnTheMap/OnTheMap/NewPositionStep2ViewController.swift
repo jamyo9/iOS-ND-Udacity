@@ -16,7 +16,7 @@ class NewPositionStep2ViewController: UIViewController {
     @IBOutlet weak var submitButton: UIButton!
     
     var appDelegate: AppDelegate!
-    var position: Position!
+    var position: StudentInformation!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +37,10 @@ class NewPositionStep2ViewController: UIViewController {
     
     @IBAction func cancelNewPosition(sender: UIButton) {
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    @IBAction func editingDidEnd(sender: AnyObject) {
+        self.editing = false
     }
     
     @IBAction func submitPosition(sender: AnyObject) {
@@ -66,11 +70,16 @@ class NewPositionStep2ViewController: UIViewController {
                             dispatch_async(dispatch_get_main_queue(),{
                                 self.showError("03", errorMessage: errorMessage)
                             })
+                        } else {
+                            // RETURN TO MAP OR TABLE
+                            self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
                         }
                     }
+                } else {
+                    dispatch_async(dispatch_get_main_queue(),{
+                        self.showError("03", errorMessage: "Error with the position.")
+                    })
                 }
-                // RETURN TO MAP OR TABLE    
-                self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             } else {
                 dispatch_async(dispatch_get_main_queue(),{
                     // Initialization failed; alert the user
@@ -97,7 +106,7 @@ class NewPositionStep2ViewController: UIViewController {
                         }
                         
                     } else {
-                        print("ERROR")
+                        self.showAlert("Error", alertMessage: "Unable to find the location.", actionTitle: "Try again")
                     }
                 } else {
                     print(error?.description)
@@ -118,7 +127,7 @@ class NewPositionStep2ViewController: UIViewController {
         }
     }
     
-    func updatePosition(placemark: CLPlacemark) -> Position {
+    func updatePosition(placemark: CLPlacemark) -> StudentInformation {
         print("updatePosition")
         self.position.firstName = self.appDelegate.loggedInPosition!.firstName
         self.position.lastName = self.appDelegate.loggedInPosition!.lastName
@@ -129,7 +138,7 @@ class NewPositionStep2ViewController: UIViewController {
         return position
     }
     
-    func showPinOnMap(pos: Position) {
+    func showPinOnMap(pos: StudentInformation) {
         print("showPinOnMap")
         // The lat and long are used to create a CLLocationCoordinates2D instance.
         let coordinate = CLLocationCoordinate2D(latitude: pos.latitude, longitude: pos.longitude )

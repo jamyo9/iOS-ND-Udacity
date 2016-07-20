@@ -14,6 +14,8 @@ class OnTheMapTableViewController: UITableViewController {
     
     @IBOutlet var table: UITableView!
     
+    var activityIndicator : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50)) as UIActivityIndicatorView
+    
     // Override functions
     
     override func viewWillAppear(animated: Bool) {
@@ -40,6 +42,8 @@ class OnTheMapTableViewController: UITableViewController {
     
     /* Refresh button was selected. */
     @IBAction func onRefreshButtonTap() {
+        self.startActivityIndicator()
+        
         // refresh the collection of position from Parse
         positions.reset()
         positions.getPositions(0) { success, errorString in
@@ -51,21 +55,38 @@ class OnTheMapTableViewController: UITableViewController {
                     print("ERROR")
                 }
             } else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.stopActivityIndicator()
+                }
                 self.tableView.reloadData()
             }
         }
     }
     
     @IBAction func logoutAction(sender: AnyObject) {
+        self.startActivityIndicator()
+        
         if (FBSDKAccessToken.currentAccessToken() != nil) {
             // User is logged in with Facebook. Log user out of Facebook.
             let loginManager = FBSDKLoginManager()
             loginManager.logOut()
             if (FBSDKAccessToken.currentAccessToken() == nil) {
                 self.appDelegate.loggedIn = false
+                self.displayLoginViewController()
+            }
+        } else {
+            UdacityClient.sharedInstance().logoutUdacity() {result, error in
+                self.stopActivityIndicator()
+                if error == nil {
+                    // successfully logged out
+                    self.appDelegate.loggedIn = false
+                    self.displayLoginViewController()
+                } else {
+                    self.stopActivityIndicator()
+                    print("Udacity logout failed")
+                }
             }
         }
-        self.displayLoginViewController()
     }
     
     func reloadTable() {
@@ -102,11 +123,36 @@ class OnTheMapTableViewController: UITableViewController {
                 print("url successfully opened")
             }
         } else {
-            print("invalid url")
+            self.showAlert("Error", alertMessage: "URL Cannot be opened", actionTitle: "OK")
         }
     }
     
+    func showAlert(alertTitle: String, alertMessage: String, actionTitle: String){
+        
+        /* Configure the alert view to display the error */
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: actionTitle, style: .Default, handler: nil))
+        
+        /* Present the alert view */
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
     func displayLoginViewController() {
+        self.stopActivityIndicator()
         self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    /* show activity indicator */
+    func startActivityIndicator() {
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+    }
+    
+    /* hide acitivity indicator */
+    func stopActivityIndicator() {
+        activityIndicator.stopAnimating()
     }
 }

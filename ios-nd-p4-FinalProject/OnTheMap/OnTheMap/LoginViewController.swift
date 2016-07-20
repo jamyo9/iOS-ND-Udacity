@@ -48,7 +48,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
             // Acquire the user's facebook user id.
             let fbToken = FBSDKAccessToken.currentAccessToken()
-            self.appDelegate.loggedInPosition = Position()
+            self.appDelegate.loggedInPosition = StudentInformation()
             self.appDelegate.loggedInPosition?.uniqueKey = fbToken.userID
             
             self.presentMapController()
@@ -62,6 +62,8 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     // MARK: Login
     @IBAction func loginPressed(sender: AnyObject) {
+        startActivityIndicator()
+        
         if let username = usernameTextField.text, password = passwordTextField.text {
             UdacityClient.sharedInstance().loginUdacity(username, password: password) {result, accountKey, error in
                 if error == nil {
@@ -72,7 +74,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                             // got valid user data back, so save it
                             self.appDelegate.loggedInPosition = position
                         } else {
-                            self.appDelegate.loggedInPosition = Position()
+                            self.appDelegate.loggedInPosition = StudentInformation()
                         }
                     }
                     
@@ -80,6 +82,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 } else {
                     self.appDelegate.loggedIn = false
                     dispatch_async(dispatch_get_main_queue(),{
+                        self.stopActivityIndicator()
                         self.showError(error!.localizedDescription)
                     })
                 }
@@ -91,13 +94,12 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         UIApplication.sharedApplication().openURL(NSURL(string: UdacityClient.UdacityConstants.udacityBaseURL + UdacityClient.UdacityConstants.udacitySignupMethod)!)
     }
     
-//    @IBAction func fbSignInAction(sender: AnyObject) {
-//        
-//    }
-    
     func presentMapController() {
         Positions.sharedInstance().positions.removeAll(keepCapacity: false)
         Positions.sharedInstance().getPositions(0) { success, errorString in
+            dispatch_async(dispatch_get_main_queue()) {
+                self.stopActivityIndicator()
+            }
             if success == false {
                 //if let errorString = errorString {
                 if errorString != nil {
@@ -112,7 +114,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         }
     }
     
-    func getLoggedInUserData(userAccountKey: String, completion: (success: Bool, position: Position?, error: NSError?) -> Void) {
+    func getLoggedInUserData(userAccountKey: String, completion: (success: Bool, position: StudentInformation?, error: NSError?) -> Void) {
         UdacityClient.sharedInstance().getUdacityUser(userAccountKey) { result, pos, error in
             if error == nil {
                 completion(success: true, position: pos, error: nil)
@@ -121,6 +123,20 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 completion(success: false, position: nil, error: error)
             }
         }
+    }
+    
+    /* show activity indicator */
+    func startActivityIndicator() {
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+    }
+    
+    /* hide acitivity indicator */
+    func stopActivityIndicator() {
+        activityIndicator.stopAnimating()
     }
 }
 
@@ -274,7 +290,7 @@ extension LoginViewController {
                         // got valid user data back, so save it
                         self.appDelegate.loggedInPosition = position
                     } else {
-                        self.appDelegate.loggedInPosition = Position()
+                        self.appDelegate.loggedInPosition = StudentInformation()
                     }
                     self.presentMapController()
                 }

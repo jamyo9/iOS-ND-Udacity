@@ -84,7 +84,7 @@
         <scene sceneID="obA-vY-09r">
             <objects>
                 <navigationController id="c9R-OS-NEl" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="List" image="table" selectedImage="list" id="4G1-29-112"/>
+                    <tabBarItem key="tabBarItem" title="List" image="list" id="4G1-29-112"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="GIx-S8-jVK">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -101,7 +101,7 @@
         <scene sceneID="UyI-1m-eI9">
             <objects>
                 <navigationController id="fKA-w2-zDM" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Map" image="collection" selectedImage="map" id="VWW-L9-UGq"/>
+                    <tabBarItem key="tabBarItem" title="Map" image="map" id="VWW-L9-UGq"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="wgG-Dl-24c">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -312,6 +312,9 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="editingDidEnd:" destination="qkV-AK-BsR" eventType="editingDidEnd" id="0Qi-yJ-2UT"/>
+                                </connections>
                             </textField>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="grJ-nZ-bYp">
                                 <rect key="frame" x="0.0" y="140" width="600" height="460"/>
@@ -466,11 +469,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="collection" width="30" height="30"/>
         <image name="list" width="32" height="32"/>
         <image name="map" width="32" height="32"/>
         <image name="pin" width="32" height="32"/>
-        <image name="table" width="30" height="30"/>
         <image name="udacity" width="256" height="256"/>
     </resources>
 </document>

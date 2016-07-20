@@ -65,12 +65,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     /* Pin button was selected. */
     @IBAction func onPinButtonTap() {
+        self.startActivityIndicator()
         displayInfoPostingViewController()
     }
     
     /* Refresh button was selected. */
     @IBAction func onRefreshButtonTap() {
         // refresh the collection of position from Parse
+        self.startActivityIndicator()
         
         positions.reset()
         positions.getPositions(0) { success, errorString in
@@ -84,20 +86,34 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.mapView.setNeedsDisplay()
+            self.stopActivityIndicator()
         }
     }
     
     @IBAction func logoutAction(sender: AnyObject) {
+        self.startActivityIndicator()
+        
         if (FBSDKAccessToken.currentAccessToken() != nil) {
             // User is logged in with Facebook. Log user out of Facebook.
             let loginManager = FBSDKLoginManager()
             loginManager.logOut()
             if (FBSDKAccessToken.currentAccessToken() == nil) {
+                self.stopActivityIndicator()
                 self.appDelegate.loggedIn = false
+                self.displayLoginViewController()
+            }
+        } else {
+            UdacityClient.sharedInstance().logoutUdacity() {result, error in
+                self.stopActivityIndicator()
+                if error == nil {
+                    // successfully logged out
+                    self.appDelegate.loggedIn = false
+                    self.displayLoginViewController()
+                } else {
+                    print("Udacity logout failed")
+                }
             }
         }
-        self.displayLoginViewController()
     }
     
     // MARK: Manage map annotations
@@ -136,7 +152,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         // Add the annotations to the map.
         self.mapView.addAnnotations(pins)
         self.mapView.setNeedsDisplay()
-        self.mapView.showAnnotations(pins, animated: true)
+        dispatch_async(dispatch_get_main_queue()) {
+            self.mapView.showAnnotations(pins, animated: true)
+        }
     }
     
     /*
@@ -184,14 +202,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     /* Received a notification that positions have been updated with new data from Parse. Recreate the pins for all locations. */
     func onPositionsUpdate() {
-        // clear the pins
-        removeAllPins()
+        self.startActivityIndicator()
         
+        // clear the pins
+        self.removeAllPins()
         // redraw the pins
-        createPins()
+        self.createPins()
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.mapView.setNeedsDisplay()
+            self.stopActivityIndicator()
         }
     }
     
@@ -204,6 +223,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func displayInfoPostingViewController() {
         let storyboard = UIStoryboard (name: "Main", bundle: nil)
         let controller = storyboard.instantiateViewControllerWithIdentifier("NewPositionStep1StoryboardID") as! NewPositionStep1ViewController
+        dispatch_async(dispatch_get_main_queue()) {
+            self.stopActivityIndicator()
+        }
         self.presentViewController(controller, animated: true, completion: nil);
     }
     
@@ -214,7 +236,33 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 print("url successfully opened")
             }
         } else {
-            print("invalid url")
+            self.showAlert("Error", alertMessage: "URL Cannot be opened", actionTitle: "OK")
         }
+    }
+    
+    func showAlert(alertTitle: String, alertMessage: String, actionTitle: String){
+        
+        /* Configure the alert view to display the error */
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: actionTitle, style: .Default, handler: nil))
+        
+        /* Present the alert view */
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    /* show activity indicator */
+    func startActivityIndicator() {
+        print("startActivityIndicator")
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+    }
+    
+    /* hide acitivity indicator */
+    func stopActivityIndicator() {
+        print("stopActivityIndicator")
+        activityIndicator.stopAnimating()
     }
 }
