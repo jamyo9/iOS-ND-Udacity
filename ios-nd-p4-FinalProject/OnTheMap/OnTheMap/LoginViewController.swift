@@ -7,7 +7,7 @@ import UIKit
 
 // MARK: - LoginViewController: UIViewController
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     // MARK: Properties
     
@@ -19,7 +19,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
-    @IBOutlet weak var debugTextLabel: UILabel!        
+    @IBOutlet weak var fbButton: FBSDKLoginButton!
     
     var activityIndicator : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50)) as UIActivityIndicatorView
     
@@ -35,6 +35,24 @@ class LoginViewController: UIViewController {
         subscribeToNotification(UIKeyboardWillHideNotification, selector: #selector(keyboardWillHide))
         subscribeToNotification(UIKeyboardDidShowNotification, selector: #selector(keyboardDidShow))
         subscribeToNotification(UIKeyboardDidHideNotification, selector: #selector(keyboardDidHide))
+        
+        // Setup facebook login...
+        // Facebook Login
+        fbButton.delegate = self
+        // request access to user's facebook profile, email, and friends
+        self.fbButton.readPermissions = ["public_profile", "email", "user_friends"]
+        
+        if (FBSDKAccessToken.currentAccessToken() != nil) {
+            // The user is already logged in to Facebook on this device.
+            appDelegate.loggedIn = true
+            
+            // Acquire the user's facebook user id.
+            let fbToken = FBSDKAccessToken.currentAccessToken()
+            self.appDelegate.loggedInPosition = Position()
+            self.appDelegate.loggedInPosition?.uniqueKey = fbToken.userID
+            
+            self.presentMapController()
+        }
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -58,19 +76,6 @@ class LoginViewController: UIViewController {
                         }
                     }
                     
-                    // get position from Parse
-                    
-                    Positions.sharedInstance().positions.removeAll(keepCapacity: false)
-                    Positions.sharedInstance().getPositions(0) { success, errorString in
-                        if success == false {
-                            //if let errorString = errorString {
-                            if errorString != nil {
-                                dispatch_async(dispatch_get_main_queue(),{
-                                    self.showError(errorString!)
-                                })
-                            }
-                        }
-                    }
                     self.presentMapController()
                 } else {
                     self.appDelegate.loggedIn = false
@@ -86,7 +91,22 @@ class LoginViewController: UIViewController {
         UIApplication.sharedApplication().openURL(NSURL(string: UdacityClient.UdacityConstants.udacityBaseURL + UdacityClient.UdacityConstants.udacitySignupMethod)!)
     }
     
+//    @IBAction func fbSignInAction(sender: AnyObject) {
+//        
+//    }
+    
     func presentMapController() {
+        Positions.sharedInstance().positions.removeAll(keepCapacity: false)
+        Positions.sharedInstance().getPositions(0) { success, errorString in
+            if success == false {
+                //if let errorString = errorString {
+                if errorString != nil {
+                    dispatch_async(dispatch_get_main_queue(),{
+                        self.showError(errorString!)
+                    })
+                }
+            }
+        }
         dispatch_async(dispatch_get_main_queue()) {
             self.performSegueWithIdentifier("LoginSuccessSegueID", sender: self)
         }
@@ -156,15 +176,13 @@ extension LoginViewController: UITextFieldDelegate {
 }
 
 // MARK: - LoginViewController (Configure UI)
-
 extension LoginViewController {
     
     private func setUIEnabled(enabled: Bool) {
         usernameTextField.enabled = enabled
         passwordTextField.enabled = enabled
         loginButton.enabled = enabled
-        debugTextLabel.text = ""
-        debugTextLabel.enabled = enabled
+        fbButton.enabled = true
         
         // adjust login button alpha
         if enabled {
@@ -228,7 +246,6 @@ extension LoginViewController {
 }
 
 // MARK: - LoginViewController (Notifications)
-
 extension LoginViewController {
     
     private func subscribeToNotification(notification: String, selector: Selector) {
@@ -237,5 +254,36 @@ extension LoginViewController {
     
     private func unsubscribeFromAllNotifications() {
         NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+}
+
+extension LoginViewController {
+    func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
+        if ((error) != nil) {
+            // Process error
+        } else if result.isCancelled {
+            // Handle cancellations
+        } else {
+            // If you ask for multiple permissions at once, you
+            // should check if specific permissions missing
+            if result.grantedPermissions.contains("email") {
+                self.appDelegate.loggedIn = true
+                // Do work
+                self.getLoggedInUserData((FBSDKAccessToken.currentAccessToken().userID)!) { success, position, error in
+                    if error == nil {
+                        // got valid user data back, so save it
+                        self.appDelegate.loggedInPosition = position
+                    } else {
+                        self.appDelegate.loggedInPosition = Position()
+                    }
+                    self.presentMapController()
+                }
+            }
+        }
+    }
+    
+    func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
+        self.appDelegate.loggedIn = false
+        self.appDelegate.loggedInPosition = nil
     }
 }

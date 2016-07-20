@@ -57,9 +57,15 @@ class OnTheMapTableViewController: UITableViewController {
     }
     
     @IBAction func logoutAction(sender: AnyObject) {
-        self.appDelegate.loggedIn = false
-        self.appDelegate.loggedInPosition = nil
-        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+        if (FBSDKAccessToken.currentAccessToken() != nil) {
+            // User is logged in with Facebook. Log user out of Facebook.
+            let loginManager = FBSDKLoginManager()
+            loginManager.logOut()
+            if (FBSDKAccessToken.currentAccessToken() == nil) {
+                self.appDelegate.loggedIn = false
+            }
+        }
+        self.displayLoginViewController()
     }
     
     func reloadTable() {
@@ -100,4 +106,7 @@ class OnTheMapTableViewController: UITableViewController {
         }
     }
     
+    func displayLoginViewController() {
+        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+    }
 }

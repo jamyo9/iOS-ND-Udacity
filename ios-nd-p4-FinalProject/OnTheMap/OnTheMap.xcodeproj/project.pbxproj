@@ -20,6 +20,8 @@
 		E92EA8C81D33B6FC00CC9D0E /* UdacityClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8C71D33B6FC00CC9D0E /* UdacityClient.swift */; };
 		E92EA8CA1D33B9A300CC9D0E /* UdacityConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92EA8C91D33B9A300CC9D0E /* UdacityConstants.swift */; };
 		E9F4EB6B1D34F5A600854AFA /* NewPositionStep1ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F4EB6A1D34F5A600854AFA /* NewPositionStep1ViewController.swift */; };
+		E9F585111D3F763C00790041 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F5850F1D3F763C00790041 /* FBSDKCoreKit.framework */; };
+		E9F585121D3F763C00790041 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F585101D3F763C00790041 /* FBSDKLoginKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,9 @@
 		E92EA8C71D33B6FC00CC9D0E /* UdacityClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityClient.swift; sourceTree = "<group>"; };
 		E92EA8C91D33B9A300CC9D0E /* UdacityConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityConstants.swift; sourceTree = "<group>"; };
 		E9F4EB6A1D34F5A600854AFA /* NewPositionStep1ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewPositionStep1ViewController.swift; sourceTree = "<group>"; };
+		E9F5850E1D3F75C800790041 /* FacebookBridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FacebookBridgingHeader.h; sourceTree = "<group>"; };
+		E9F5850F1D3F763C00790041 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		E9F585101D3F763C00790041 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +50,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9F585121D3F763C00790041 /* FBSDKLoginKit.framework in Frameworks */,
+				E9F585111D3F763C00790041 /* FBSDKCoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,6 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				E92EA8A01D339F2500CC9D0E /* OnTheMap */,
+				E9F585131D3F764A00790041 /* Frameworks */,
 				E92EA89F1D339F2500CC9D0E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,10 +82,10 @@
 				E92EA8B71D33A3DD00CC9D0E /* SupportingFiles */,
 				E92EA8B61D33A3C600CC9D0E /* Objects */,
 				E92EA8A11D339F2500CC9D0E /* AppDelegate.swift */,
+				E92EA8B31D339F9D00CC9D0E /* Main.storyboard */,
 				E92EA8A81D339F2500CC9D0E /* Assets.xcassets */,
 				E92EA8AA1D339F2500CC9D0E /* LaunchScreen.storyboard */,
 				E92EA8AD1D339F2500CC9D0E /* Info.plist */,
-				E92EA8B31D339F9D00CC9D0E /* Main.storyboard */,
 			);
 			path = OnTheMap;
 			sourceTree = "<group>";
@@ -106,6 +114,7 @@
 		E92EA8B71D33A3DD00CC9D0E /* SupportingFiles */ = {
 			isa = PBXGroup;
 			children = (
+				E9F5850E1D3F75C800790041 /* FacebookBridgingHeader.h */,
 				E92EA8C61D33B6CD00CC9D0E /* UdacityClient */,
 			);
 			name = SupportingFiles;
@@ -118,6 +127,15 @@
 				E92EA8C91D33B9A300CC9D0E /* UdacityConstants.swift */,
 			);
 			name = UdacityClient;
+			sourceTree = "<group>";
+		};
+		E9F585131D3F764A00790041 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E9F585101D3F763C00790041 /* FBSDKLoginKit.framework */,
+				E9F5850F1D3F763C00790041 /* FBSDKCoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,10 +325,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jamyo9.OnTheMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = OnTheMap/FacebookBridgingHeader.h;
 			};
 			name = Debug;
 		};
@@ -318,10 +341,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = OnTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jamyo9.OnTheMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = OnTheMap/FacebookBridgingHeader.h;
 			};
 			name = Release;
 		};

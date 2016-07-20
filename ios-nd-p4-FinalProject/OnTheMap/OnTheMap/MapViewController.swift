@@ -89,9 +89,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @IBAction func logoutAction(sender: AnyObject) {
-        self.appDelegate.loggedIn = false
-        self.appDelegate.loggedInPosition = nil
-        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+        if (FBSDKAccessToken.currentAccessToken() != nil) {
+            // User is logged in with Facebook. Log user out of Facebook.
+            let loginManager = FBSDKLoginManager()
+            loginManager.logOut()
+            if (FBSDKAccessToken.currentAccessToken() == nil) {
+                self.appDelegate.loggedIn = false
+            }
+        }
+        self.displayLoginViewController()
     }
     
     // MARK: Manage map annotations
@@ -191,9 +197,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     /* Modally present the Login view controller. */
     func displayLoginViewController() {
-        let storyboard = UIStoryboard (name: "Main", bundle: nil)
-        let controller = storyboard.instantiateViewControllerWithIdentifier("LoginStoryboardID") as! LoginViewController
-        self.presentViewController(controller, animated: true, completion: nil);
+        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
     /* Modally present the InfoPosting view controller. */
