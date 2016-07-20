@@ -2,7 +2,7 @@
 //  MapViewController.swift
 //  OnTheMap
 //
-//  Created by Juan Alvarez on 5/7/16.
+//  Created by Juan Alvarez on 7/7/16.
 //  Copyright © 2016 Juan Alvarez. All rights reserved.
 //
 
