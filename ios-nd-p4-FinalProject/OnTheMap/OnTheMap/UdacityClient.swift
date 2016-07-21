@@ -74,7 +74,6 @@ class UdacityClient {
             }
         }
     }
-    
     func logoutUdacity(completionHandler: (result: Bool, error: NSError?) -> Void) {
         let sessionUrl = UdacityConstants.udacityBaseURL + UdacityConstants.udacitySessionMethod
         let request = NSMutableURLRequest(URL: NSURL(string: sessionUrl)!)
@@ -90,10 +89,11 @@ class UdacityClient {
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if error != nil {
-                return
+                completionHandler(result: false, error: error)
             }
-            let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5))
-            print(NSString(data: newData, encoding: NSUTF8StringEncoding))
+            completionHandler(result: true, error: nil)
+//            let newData = data!.subdataWithRange(NSMakeRange(5, data!.length - 5))
+//            print(NSString(data: newData, encoding: NSUTF8StringEncoding))
         }
         task.resume()
     }

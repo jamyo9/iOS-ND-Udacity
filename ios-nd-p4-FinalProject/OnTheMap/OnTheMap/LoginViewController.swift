@@ -93,6 +93,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                         }
                     }
                     
+                    self.stopActivityIndicator()
                     self.presentMapController()
                 } else {
                     self.appDelegate.loggedIn = false
@@ -112,9 +113,6 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     func presentMapController() {
         Positions.sharedInstance().positions.removeAll(keepCapacity: false)
         Positions.sharedInstance().getPositions(0) { success, errorString in
-            dispatch_async(dispatch_get_main_queue()) {
-                self.stopActivityIndicator()
-            }
             if success == false {
                 //if let errorString = errorString {
                 if errorString != nil {
