@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class NewPositionStep2ViewController: UIViewController {
+class NewPositionStep2ViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var linkTextField: UITextField!
     @IBOutlet weak var map: MKMapView!
@@ -18,11 +18,13 @@ class NewPositionStep2ViewController: UIViewController {
     var appDelegate: AppDelegate!
     var position: StudentInformation!
     
+    var activityIndicator : UIActivityIndicatorView = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50)) as UIActivityIndicatorView
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        
+        self.linkTextField.delegate = self
         self.findLocationFromStep1()
     }
     
@@ -35,6 +37,11 @@ class NewPositionStep2ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
     @IBAction func cancelNewPosition(sender: UIButton) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -44,12 +51,14 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     @IBAction func submitPosition(sender: AnyObject) {
-        print("submitPosition")
+        self.startActivityIndicator()
+        
         // CHECK VALID URL
         let stringWithPossibleURL: String = self.linkTextField.text! // Or another source of text
         let validURL: NSURL = NSURL(string: stringWithPossibleURL)!
         if stringWithPossibleURL.isEmpty {
             dispatch_async(dispatch_get_main_queue(),{
+                self.stopActivityIndicator()
                 self.showError("02", errorMessage: "")
             })
         } else {
@@ -68,20 +77,27 @@ class NewPositionStep2ViewController: UIViewController {
                                 errorMessage = errorString
                             }
                             dispatch_async(dispatch_get_main_queue(),{
+                                self.stopActivityIndicator()
                                 self.showError("03", errorMessage: errorMessage)
                             })
                         } else {
-                            // RETURN TO MAP OR TABLE
-                            self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+//                            NSOperationQueue.mainQueue().addOperationWithBlock {
+                            dispatch_async(dispatch_get_main_queue(),{
+                                self.stopActivityIndicator()
+                                // RETURN TO MAP OR TABLE
+                                self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+                            })
                         }
                     }
                 } else {
                     dispatch_async(dispatch_get_main_queue(),{
+                        self.stopActivityIndicator()
                         self.showError("03", errorMessage: "Error with the position.")
                     })
                 }
             } else {
                 dispatch_async(dispatch_get_main_queue(),{
+                    self.stopActivityIndicator()
                     // Initialization failed; alert the user
                     self.showError("01", errorMessage: "")
                 })
@@ -90,7 +106,8 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     func findLocationFromStep1() {
-        print("findLocationFromStep1")
+        self.stopActivityIndicator()
+        
         if let text = position.mapString {
             forwardGeoCodeLocation(text) { placemark, error in
                 if error == nil {
@@ -102,14 +119,23 @@ class NewPositionStep2ViewController: UIViewController {
                         self.position = self.updatePosition(placemark)
                         
                         if let position = self.position {
+                            dispatch_async(dispatch_get_main_queue(),{
+                                self.stopActivityIndicator()
+                            })
                             self.showPinOnMap(position)
                         }
                         
                     } else {
+                        dispatch_async(dispatch_get_main_queue(),{
+                            self.stopActivityIndicator()
+                        })
                         self.showAlert("Error", alertMessage: "Unable to find the location.", actionTitle: "Try again")
                     }
                 } else {
-                    print(error?.description)
+                    dispatch_async(dispatch_get_main_queue(),{
+                        self.stopActivityIndicator()
+                    })
+                    self.showAlert("Error", alertMessage: (error?.description)!, actionTitle: "Try again")
                 }
             }
         }
@@ -165,7 +191,7 @@ class NewPositionStep2ViewController: UIViewController {
     }
     
     func showError(errorCode: String, errorMessage: String?){
-        let titleString = "Invalid URL"
+        let titleString = "Error"
         var errorString = ""
         
         if errorCode.rangeOfString("01") != nil{
@@ -190,4 +216,17 @@ class NewPositionStep2ViewController: UIViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    /* show activity indicator */
+    func startActivityIndicator() {
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
+    }
+    
+    /* hide acitivity indicator */
+    func stopActivityIndicator() {
+        activityIndicator.stopAnimating()
+    }
 }

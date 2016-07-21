@@ -12,9 +12,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
-    var positions: [StudentInformation] = []
-    
+        
     /* true if the user has loggedIn to Udacity, else false */
     var loggedIn = false
     var loggedInPosition: StudentInformation?

@@ -27,6 +27,30 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         // set the mapView delegate to this view controller
         mapView.delegate = self
+        
+        print(appDelegate.loggedInPosition)
+        
+        if self.appDelegate.loggedInPosition == nil {
+            let fbToken = FBSDKAccessToken.currentAccessToken()
+            let userId = fbToken.userID
+            FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, name, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
+                if error != nil {
+                    self.showAlert("Error", alertMessage: error.localizedDescription, actionTitle: "OK")
+                } else if let userData = result as? [String:AnyObject] {
+                    self.appDelegate.loggedInPosition = StudentInformation()
+                    // Access user data
+                    if let lastName = userData["last_name"] as? String {
+                        self.appDelegate.loggedInPosition!.lastName = lastName
+                    }
+                    if let firstName = userData["first_name"] as? String {
+                        self.appDelegate.loggedInPosition!.firstName = firstName
+                    }
+                    self.appDelegate.loggedInPosition!.mediaURL = "http://www.facebook.com/\(userId)/"
+                    
+                    self.appDelegate.loggedInPosition!.uniqueKey = userId
+                }
+            })
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -78,7 +102,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         positions.getPositions(0) { success, errorString in
             if success == false {
                 //if let errorString = errorString {
-                print("ERROR")
+                self.showAlert("Error", alertMessage: errorString!, actionTitle: "OK")
             } else {
                 self.removeAllPins()
                 self.createPins()
@@ -101,6 +125,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 self.stopActivityIndicator()
                 self.appDelegate.loggedIn = false
                 self.displayLoginViewController()
+            } else {
+                self.showAlert("ERROR", alertMessage: "Facebook logout failed", actionTitle: "OK")
             }
         } else {
             UdacityClient.sharedInstance().logoutUdacity() {result, error in
@@ -110,7 +136,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     self.appDelegate.loggedIn = false
                     self.displayLoginViewController()
                 } else {
-                    print("Udacity logout failed")
+                    self.showAlert("ERROR", alertMessage: "Udacity logout failed", actionTitle: "OK")
                 }
             }
         }

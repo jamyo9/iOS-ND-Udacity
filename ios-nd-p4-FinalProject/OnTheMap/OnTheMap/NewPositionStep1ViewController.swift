@@ -22,6 +22,28 @@ class NewPositionStep1ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        if self.appDelegate.loggedInPosition == nil {
+            let fbToken = FBSDKAccessToken.currentAccessToken()
+            let userId = fbToken.userID
+            FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, name, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
+                if error != nil {
+                    self.showAlert("Error", alertMessage: error.localizedDescription, actionTitle: "OK")
+                } else if let userData = result as? [String:AnyObject] {
+                    self.appDelegate.loggedInPosition = StudentInformation()
+                    // Access user data
+                    if let lastName = userData["last_name"] as? String {
+                        self.appDelegate.loggedInPosition!.lastName = lastName
+                    }
+                    if let firstName = userData["first_name"] as? String {
+                        self.appDelegate.loggedInPosition!.firstName = firstName
+                    }
+                    self.appDelegate.loggedInPosition!.mediaURL = "http://www.facebook.com/\(userId)/"
+                    
+                    self.appDelegate.loggedInPosition!.uniqueKey = userId
+                }
+            })
+        }
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -55,7 +77,7 @@ class NewPositionStep1ViewController: UIViewController {
         pos.uniqueKey = self.appDelegate.loggedInPosition!.uniqueKey
         pos.firstName = self.appDelegate.loggedInPosition!.firstName
         pos.lastName = self.appDelegate.loggedInPosition!.lastName
-        pos.mediaURL = ""
+        pos.mediaURL = self.appDelegate.loggedInPosition!.mediaURL
         pos.mapString = mapString
         pos.createdAt = NSDate()
         pos.updatedAt = NSDate()
@@ -74,5 +96,15 @@ class NewPositionStep1ViewController: UIViewController {
     /* hide acitivity indicator */
     func stopActivityIndicator() {
         activityIndicator.stopAnimating()
+    }
+    
+    func showAlert(alertTitle: String, alertMessage: String, actionTitle: String){
+        
+        /* Configure the alert view to display the error */
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .Alert)
+        alert.addAction(UIAlertAction(title: actionTitle, style: .Default, handler: nil))
+        
+        /* Present the alert view */
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 }

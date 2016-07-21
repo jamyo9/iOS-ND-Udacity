@@ -44,13 +44,28 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
         if (FBSDKAccessToken.currentAccessToken() != nil) {
             // The user is already logged in to Facebook on this device.
-            appDelegate.loggedIn = true
+            self.appDelegate.loggedIn = true
             
             // Acquire the user's facebook user id.
             let fbToken = FBSDKAccessToken.currentAccessToken()
-            self.appDelegate.loggedInPosition = StudentInformation()
-            self.appDelegate.loggedInPosition?.uniqueKey = fbToken.userID
-            
+            let userId = fbToken.userID
+            FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, name, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
+                if error != nil {
+                    self.showError(error.localizedDescription)
+                } else if let userData = result as? [String:AnyObject] {
+                    self.appDelegate.loggedInPosition = StudentInformation()
+                    // Access user data
+                    if let lastName = userData["last_name"] as? String {
+                        self.appDelegate.loggedInPosition!.lastName = lastName
+                    }
+                    if let firstName = userData["first_name"] as? String {
+                        self.appDelegate.loggedInPosition!.firstName = firstName
+                    }
+                    self.appDelegate.loggedInPosition!.mediaURL = "http://www.facebook.com/\(userId)/"
+                    
+                    self.appDelegate.loggedInPosition!.uniqueKey = userId
+                }
+            })
             self.presentMapController()
         }
     }
@@ -285,15 +300,25 @@ extension LoginViewController {
             if result.grantedPermissions.contains("email") {
                 self.appDelegate.loggedIn = true
                 // Do work
-                self.getLoggedInUserData((FBSDKAccessToken.currentAccessToken().userID)!) { success, position, error in
-                    if error == nil {
-                        // got valid user data back, so save it
-                        self.appDelegate.loggedInPosition = position
-                    } else {
+                let userId = (FBSDKAccessToken.currentAccessToken().userID)!
+                FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, name, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
+                    if error != nil {
+                        self.showError(error.localizedDescription)
+                    } else if let userData = result as? [String:AnyObject] {
                         self.appDelegate.loggedInPosition = StudentInformation()
+                        // Access user data
+                        if let lastName = userData["last_name"] as? String {
+                            self.appDelegate.loggedInPosition!.lastName = lastName
+                        }
+                        if let firstName = userData["first_name"] as? String {
+                            self.appDelegate.loggedInPosition!.firstName = firstName
+                        }
+                        self.appDelegate.loggedInPosition!.mediaURL = "http://www.facebook.com/\(userId)/"
+                        
+                        self.appDelegate.loggedInPosition!.uniqueKey = userId
                     }
-                    self.presentMapController()
-                }
+                })
+                self.presentMapController()
             }
         }
     }
