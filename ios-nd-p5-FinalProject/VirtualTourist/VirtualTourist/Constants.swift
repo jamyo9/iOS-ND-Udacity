@@ -17,11 +17,6 @@ struct Constants {
         static let APIScheme = "https"
         static let APIHost = "api.flickr.com"
         static let APIPath = "/services/rest"
-        
-        static let SearchBBoxHalfWidth = 1.0
-        static let SearchBBoxHalfHeight = 1.0
-        static let SearchLatRange = (-90.0, 90.0)
-        static let SearchLonRange = (-180.0, 180.0)
     }
     
     // MARK: Flickr Parameter Keys
@@ -36,18 +31,21 @@ struct Constants {
         static let Text = "text"
         static let BoundingBox = "bbox"
         static let Page = "page"
+        static let Lat = "lat"
+        static let Lon = "lon"
     }
     
     // MARK: Flickr Parameter Values
     struct FlickrParameterValues {
         static let SearchMethod = "flickr.photos.search"
-        static let APIKey = "38d10aad8ddbedf4b41a4c2651ebf3d8"
+        static let APIKey = "45ed3f301fc4dc6d7409e170c5b12766"
         static let ResponseFormat = "json"
         static let DisableJSONCallback = "1" /* 1 means "yes" */
         static let GalleryPhotosMethod = "flickr.galleries.getPhotos"
         static let GalleryID = "5704-72157622566655097"
         static let MediumURL = "url_m"
         static let UseSafeSearch = "1"
+        static let Extras = "extras"
     }
     
     // MARK: Flickr Response Keys
@@ -66,14 +64,4 @@ struct Constants {
         static let OKStatus = "ok"
     }
     
-    // FIX: As of Swift 2.2, using strings for selectors has been deprecated. Instead, #selector(methodName) should be used.
-    /*
-    // MARK: Selectors
-    struct Selectors {
-        static let KeyboardWillShow: Selector = "keyboardWillShow:"
-        static let KeyboardWillHide: Selector = "keyboardWillHide:"
-        static let KeyboardDidShow: Selector = "keyboardDidShow:"
-        static let KeyboardDidHide: Selector = "keyboardDidHide:"
-    }
-    */
 }

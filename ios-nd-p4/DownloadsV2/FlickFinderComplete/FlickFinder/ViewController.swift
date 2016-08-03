@@ -259,6 +259,7 @@ class ViewController: UIViewController {
             } else {
                 let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
                 let photoDictionary = photosArray[randomPhotoIndex] as [String: AnyObject]
+                print(photoDictionary)
                 let photoTitle = photoDictionary[Constants.FlickrResponseKeys.Title] as? String
                 
                 /* GUARD: Does our photo have a key for 'url_m'? */
