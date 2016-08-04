@@ -33,6 +33,7 @@ struct Constants {
         static let Page = "page"
         static let Lat = "lat"
         static let Lon = "lon"
+        static let PerPage = "per_page"
     }
     
     // MARK: Flickr Parameter Values
@@ -46,6 +47,7 @@ struct Constants {
         static let MediumURL = "url_m"
         static let UseSafeSearch = "1"
         static let Extras = "extras"
+        static let PerPage = "20"
     }
     
     // MARK: Flickr Response Keys

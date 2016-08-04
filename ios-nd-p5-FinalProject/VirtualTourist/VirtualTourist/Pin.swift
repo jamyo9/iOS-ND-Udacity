@@ -13,7 +13,7 @@ class Pin: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(latitude: Double, longitude: Double, createdAt: NSDate, context: NSManagedObjectContext){
+    init(latitude: Double, longitude: Double, createdAt: NSDate, totalPages: NSNumber, context: NSManagedObjectContext){
         
         let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -21,10 +21,11 @@ class Pin: NSManagedObject {
         self.latitude = latitude as NSNumber
         self.longitude = longitude as NSNumber
         self.createdAt = createdAt
+        self.totalPages = totalPages
         self.photos = nil
     }
     
-    init(latitude: Double, longitude: Double, createdAt: NSDate, photos: Set<Photo>, context: NSManagedObjectContext){
+    init(latitude: Double, longitude: Double, createdAt: NSDate, totalPages: NSNumber, photos: Set<Photo>, context: NSManagedObjectContext){
         
         let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -32,6 +33,7 @@ class Pin: NSManagedObject {
         self.latitude = latitude as NSNumber
         self.longitude = longitude as NSNumber
         self.createdAt = createdAt
+        self.totalPages = totalPages
         self.photos = photos
     }
     
@@ -51,24 +53,3 @@ class Pin: NSManagedObject {
         return true
     }
 }
-
-//extension Pin {
-//    
-//    func addPhotoToPin(photo:Photo) {
-//        var photosM = self.mutableSetValueForKey("photos")
-//        photosM.addObject(photo)
-//    }
-//    
-//    func getNumberOfPhotos() -> Int {
-//        return self.photos!.count;
-//    }
-//    
-//    func getPhotos() -> [Photo] {
-//        var photo: [Photo]
-//        photo = self.photos!.allObjects as! [Photo]
-//        photo = self.photos!.allObjects as! [Photo]
-//        
-//        return photo
-//    }
-//    
-//}

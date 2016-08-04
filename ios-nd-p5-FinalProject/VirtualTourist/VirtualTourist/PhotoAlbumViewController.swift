@@ -15,13 +15,20 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
-    @IBOutlet weak var deleteButton: UIBarButtonItem!
     @IBOutlet weak var noImageText: UITextField!
     
     var pin: Pin! = nil
     var imagesToRemove: [NSIndexPath] = []
     var context: NSManagedObjectContext {
         return CoreDataStack.sharedInstance().context
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if pin != nil && pin.photos?.count == 0 {
+            searchPhotos(self.pin)
+        }
     }
     
     override func viewDidLoad() {
@@ -45,10 +52,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
             let region = MKCoordinateRegion(center: annotation.coordinate, span: span)
             self.mapView.setRegion(region, animated: true)
             mapView.addAnnotation(annotation)
-            
-            if pin.photos?.count == 0 {
-                DataModel.searchPhotos(self.pin)
-            }
         }
         
         // Invoke fetchedResultsController.performFetch(nil) here
@@ -96,25 +99,17 @@ extension PhotoAlbumViewController {
         
         if self.pin.photos?.count > 0 {
             for item in self.collectionView!.visibleCells() as! [PhotoCollectionViewCell] {
-                self.imagesToRemove.append(self.collectionView!.indexPathForCell(item as PhotoCollectionViewCell)!)
+                let cell = item as PhotoCollectionViewCell
+                cell.photoView.image = nil
+                self.imagesToRemove.append(self.collectionView!.indexPathForCell(cell)!)
             }
-            self.deleteAction(sender)
+            self.deleteAction()
             
-            DataModel.searchPhotos(self.pin)
-        }
-        
-        dispatch_async(dispatch_get_main_queue()) {
-            if (self.pin.photos?.count == 0) {
-                self.noImageText.hidden = false
-            } else {
-                self.noImageText.hidden = true
-            }
-            
-            self.newCollectionButton.enabled = true
+            searchPhotos(self.pin)
         }
     }
     
-    @IBAction func deleteAction(sender: AnyObject) {
+    func deleteAction() {
         
         for index in self.imagesToRemove {
             self.context.deleteObject(self.fetchedResultsController.objectAtIndexPath(index) as! NSManagedObject)
@@ -131,14 +126,60 @@ extension PhotoAlbumViewController {
             self.collectionView.reloadData()
         }
         
-        self.deleteButton.enabled = false
-        
         if (self.pin.photos?.count == 0) {
             self.noImageText.hidden = false
         } else {
             self.noImageText.hidden = true
         }
     }
+    
+    func searchPhotos(pin: Pin) {
+        
+        RestClient.sharedInstance().taskForPhotosSearch(pin) { result, error in
+            if let error = error {
+                print(error)
+            } else {
+                guard let photos = result as? [String:AnyObject] else {
+                    print(error)
+                    return
+                }
+                
+                guard let photosArray = photos["photo"] as? [[String:AnyObject]] else {
+                    print(error)
+                    return
+                }
+                
+                // Store the photos in the pin
+                self.context.performBlock {
+                    let _ = photosArray.map() {(dictionary: [String:AnyObject]) -> Photo in
+                        let photo = Photo(dictionary: dictionary, context: self.context)
+                        photo.pin = pin
+                        return photo
+                    }
+                    CoreDataStack.sharedInstance().saveContext()
+                    
+                }
+//                CoreDataStack.sharedInstance().saveContext()
+                
+                do {
+                    try self.fetchedResultsController.performFetch()
+                } catch {}
+                
+                
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.collectionView.reloadData()
+                    if (self.pin.photos?.count == 0) {
+                        self.noImageText.hidden = false
+                    } else {
+                        self.noImageText.hidden = true
+                    }
+                    self.newCollectionButton.enabled = true
+                }
+            }
+        }
+        
+    }
+    
 }
 
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -151,10 +192,9 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCellID", forIndexPath: indexPath) as! PhotoCollectionViewCell
-        var image = UIImage(named: "placeholder")
         
         //Set the Photo Image
-        if photo.url == nil || photo.url == "" || photo.image == nil {
+        if photo.url == nil || photo.url == "" {
             // if the photo doesn´t have an image, we remove it from the collection
             self.context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
             CoreDataStack.sharedInstance().saveContext()
@@ -168,12 +208,36 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                 self.collectionView.reloadData()
             }
             
-        } else if photo.image != nil {
-            image = UIImage(data: photo.image!)
+        } else {
+            
+            if photo.image == nil {
+                cell.activityIndicator.startAnimating()
+                
+                RestClient.sharedInstance().taskForImageDownload(photo.url!) { imageData, error in
+                    
+                    if let error = error {
+                        print("Flickr Photo Download Error:\(error)")
+                    }
+                    
+                    if let data = imageData {
+                        
+                        self.context.performBlock {
+                            photo.image = data
+                            CoreDataStack.sharedInstance().saveContext()
+                        }
+                        
+                        //Update the cell later, on the main thread
+                        dispatch_async(dispatch_get_main_queue()) {
+                            cell.photoView!.image = UIImage(data: data)
+                            cell.activityIndicator.stopAnimating()
+                        }
+                    }
+                }
+            } else {
+                cell.photoView!.image = UIImage(data: photo.image!)
+            }
         }
-        
-        cell.photoView!.image = image
-        
+
         return cell
     }
     
@@ -181,23 +245,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         let cell = collectionView.cellForItemAtIndexPath(indexPath)
         cell!.alpha = 0.5
         self.imagesToRemove.append(indexPath)
-        
-        if imagesToRemove.count > 0 {
-            self.deleteButton.enabled = true
-        } else {
-            self.deleteButton.enabled = false
-        }
-    }
-    
-    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell!.alpha = 1.0
-        self.imagesToRemove.removeAtIndex(imagesToRemove.indexOf(indexPath)!)
-        
-        if imagesToRemove.count > 0 {
-            self.deleteButton.enabled = true
-        } else {
-            self.deleteButton.enabled = false
-        }
+        self.deleteAction()
     }
 }

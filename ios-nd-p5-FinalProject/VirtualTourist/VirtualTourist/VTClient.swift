@@ -42,9 +42,10 @@ class VTClient: NSObject {
         
         //start the request
         task.resume()
+        
         return task
     }
-    
+
     //Mark -- Post
     func taskForPostMethod(urlString: String, headerFields: [String:String], bodyParameters: [String:AnyObject], completionHandler: (data: NSData?, error: NSError?) -> Void) -> NSURLSessionDataTask {
         

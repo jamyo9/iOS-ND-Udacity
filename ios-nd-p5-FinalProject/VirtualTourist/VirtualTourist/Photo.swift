@@ -17,6 +17,7 @@ class Photo: NSManagedObject {
         static let Height = "height_m"
         static let Width = "width_m"
         static let Owner = "owner"
+        static let TotalPages = "pages"
     }
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -24,6 +25,7 @@ class Photo: NSManagedObject {
     }
     
     override func prepareForDeletion() {
+        super.prepareForDeletion()
         ImageCache.sharedInstance().deleteImage(id!)
     }
     

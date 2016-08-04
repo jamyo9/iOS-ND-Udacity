@@ -65,11 +65,6 @@
                                                 </connections>
                                             </button>
                                         </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="trash" id="JTH-Zf-RKa">
-                                            <connections>
-                                                <action selector="deleteAction:" destination="kaE-Bn-iIO" id="8p6-Az-cHg"/>
-                                            </connections>
-                                        </barButtonItem>
                                     </navigationItem>
                                 </items>
                             </navigationBar>
@@ -99,10 +94,15 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="27y-KF-Wdb">
                                                     <rect key="frame" x="0.0" y="0.0" width="119" height="112"/>
                                                 </imageView>
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="QIR-EH-oIn">
+                                                    <rect key="frame" x="41" y="37" width="37" height="37"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <color key="backgroundColor" red="0.01176470588" green="0.1019607843" blue="0.36470588240000001" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
+                                            <outlet property="activityIndicator" destination="QIR-EH-oIn" id="auy-KD-gQw"/>
                                             <outlet property="photoView" destination="27y-KF-Wdb" id="aXb-Jz-1mk"/>
                                         </connections>
                                     </collectionViewCell>
@@ -155,7 +155,6 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="TNX-M6-oI2" id="ZcS-TS-JVk"/>
-                        <outlet property="deleteButton" destination="JTH-Zf-RKa" id="D9D-P1-Ett"/>
                         <outlet property="mapView" destination="XnY-A3-nDX" id="SEI-Jh-0Nn"/>
                         <outlet property="newCollectionButton" destination="GtO-zd-L0Q" id="lor-Ak-b9J"/>
                         <outlet property="noImageText" destination="2yO-B9-Zly" id="Rnd-66-aHP"/>

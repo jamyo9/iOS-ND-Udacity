@@ -16,6 +16,12 @@ class RestClient: NSObject {
         // Specify the header fields and query parameters
         let headerFields = [String:String]()
         
+        var page = 1
+        
+        if pin.totalPages as! Int > 0 {
+            page = Int(arc4random_uniform(UInt32(min(40,pin.totalPages as! Int)))) + 1
+        }
+        
         let queryParameters: [String:AnyObject] = [
             Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
             Constants.FlickrParameterKeys.APIKey: Constants.FlickrParameterValues.APIKey,
@@ -24,13 +30,14 @@ class RestClient: NSObject {
             Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
             Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
             Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
-            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
+            Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback,
+            Constants.FlickrParameterKeys.PerPage: Constants.FlickrParameterValues.PerPage,
+            Constants.FlickrParameterKeys.Page: page
         ]
         
         let urlString = Constants.Flickr.APIScheme + "://" + Constants.Flickr.APIHost + "/" + Constants.Flickr.APIPath
         
-        let restClient = VTClient.sharedInstance()
-        restClient.taskForGetMethod(urlString, headerFields: headerFields, queryParameters: queryParameters) { (data, error) in
+        VTClient.sharedInstance().taskForGetMethod(urlString, headerFields: headerFields, queryParameters: queryParameters) { (data, error) in
             
             if let _ = error {
                 completionHandler(result: nil, errorString: "Failed to retrieve photos")
@@ -50,6 +57,15 @@ class RestClient: NSObject {
                 guard let photos = JSONResult["photos"] as? [String:AnyObject] else {
                     completionHandler(result: nil, errorString: "Cannot find key 'photos' in JSON")
                     return
+                }
+                
+                if let totalPages = photos["pages"] as? Int {
+                    CoreDataStack.sharedInstance().context.performBlock {
+                        pin.totalPages = totalPages
+                        CoreDataStack.sharedInstance().saveContext()
+                    }
+                } else {
+                    completionHandler(result : nil, errorString: "Cannot find key 'pages' in \(photos)")
                 }
                 
                 completionHandler(result: photos, errorString: nil)

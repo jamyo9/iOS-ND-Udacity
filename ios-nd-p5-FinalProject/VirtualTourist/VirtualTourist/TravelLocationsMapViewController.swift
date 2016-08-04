@@ -90,7 +90,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate, NSF
         case .Began:
             annotation.coordinate = coordinates
             mapView.addAnnotation(annotation)
-            let _ = Pin(latitude: coordinates.latitude, longitude: coordinates.longitude, createdAt: NSDate(), context: context)
+            let _ = Pin(latitude: coordinates.latitude, longitude: coordinates.longitude, createdAt: NSDate(), totalPages: 0, context: context)
         case .Ended:
             CoreDataStack.sharedInstance().saveContext()
         default:
