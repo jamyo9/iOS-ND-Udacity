@@ -15,11 +15,11 @@ class DataModel: NSObject {
     }
     
     private class var context: NSManagedObjectContext {
-        return CoreDataStack.sharedInstance().context
+        return CoreDataStack.sharedInstance.context
     }
     
     private class func saveContext() {
-        CoreDataStack.sharedInstance().saveContext()
+        CoreDataStack.sharedInstance.saveContext()
     }
     
 }// End of Class
