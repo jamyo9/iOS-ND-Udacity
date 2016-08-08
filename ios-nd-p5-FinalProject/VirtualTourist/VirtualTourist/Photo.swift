@@ -26,7 +26,7 @@ class Photo: NSManagedObject {
     
     override func prepareForDeletion() {
         super.prepareForDeletion()
-        ImageCache.sharedInstance().deleteImage(id!)
+        ImageCache.sharedInstance.deleteImage(id!)
     }
     
     init(dictionary: [String:AnyObject], context: NSManagedObjectContext) {

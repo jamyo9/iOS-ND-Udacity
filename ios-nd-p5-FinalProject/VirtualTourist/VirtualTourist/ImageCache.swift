@@ -7,6 +7,8 @@
 
 import UIKit
 
+private let sharedImageCache = ImageCache()
+
 class ImageCache {
     
     private var inMemoryCache = NSCache()
@@ -76,13 +78,17 @@ class ImageCache {
         return fullURL.path!
     }
     
-    class func sharedInstance() -> ImageCache {
-        
-        struct Singleton {
-            static var shareInstance = ImageCache()
-        }
-        
-        return Singleton.shareInstance
+//    class func sharedInstance() -> ImageCache {
+//        
+//        struct Singleton {
+//            static var shareInstance = ImageCache()
+//        }
+//        
+//        return Singleton.shareInstance
+//    }
+    
+    class var sharedInstance: ImageCache {
+        return sharedImageCache
     }
     
 }// End of Class

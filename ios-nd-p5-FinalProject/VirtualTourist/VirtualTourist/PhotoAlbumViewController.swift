@@ -18,10 +18,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
     @IBOutlet weak var noImageText: UITextField!
     
     var pin: Pin! = nil
-    var imagesToRemove: [NSIndexPath] = []
+//    var imagesToRemove: [NSIndexPath] = []
     var context: NSManagedObjectContext {
-        return CoreDataStack.sharedInstance().context
+        return CoreDataStack.sharedInstance.context
     }
+    
+    var insertedIndexPaths: [NSIndexPath]!
+    var deletedIndexPaths: [NSIndexPath]!
+    var updatedIndexPaths: [NSIndexPath]!
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -70,21 +74,68 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
+    // MARK: - NSFetchedResultsController
     lazy var fetchedResultsController: NSFetchedResultsController = {
         
         let fetchRequest = NSFetchRequest(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "url", ascending: true)]
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin)
+        fetchRequest.sortDescriptors = []
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
         
         return fetchedResultsController
     }()
+    
+    // MARK: - Fetched Results Controller Delegate
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        // We are about to handle some new changes. Start out with empty arrays for each change type
+        insertedIndexPaths = [NSIndexPath]()
+        deletedIndexPaths = [NSIndexPath]()
+        updatedIndexPaths = [NSIndexPath]()
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        
+        switch type {
+            
+        case .Insert:
+            insertedIndexPaths.append(newIndexPath!)
+            break
+        case .Delete:
+            print("Delete an item")
+            deletedIndexPaths.append(indexPath!)
+            break
+        case .Update:
+            print("Update an item.")
+            updatedIndexPaths.append(indexPath!)
+            break
+        case .Move:
+            print("Move an item. We don't expect to see this in this app.")
+            break
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        
+        print("In controllerDidChangeContent. changes.count: \(insertedIndexPaths.count + deletedIndexPaths.count)")
+        
+        collectionView.performBatchUpdates({() -> Void in
+            
+            for indexPath in self.insertedIndexPaths {
+                self.collectionView.insertItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.deletedIndexPaths {
+                self.collectionView.deleteItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.updatedIndexPaths {
+                self.collectionView.reloadItemsAtIndexPaths([indexPath])
+            }
+            
+            }, completion: nil)
+    }
 }
 
 extension PhotoAlbumViewController {
@@ -94,48 +145,31 @@ extension PhotoAlbumViewController {
     }
     
     @IBAction func newCollectionAction(sender: AnyObject) {
-        
         self.newCollectionButton.enabled = false
         
         if self.pin.photos?.count > 0 {
-            for item in self.collectionView!.visibleCells() as! [PhotoCollectionViewCell] {
-                let cell = item as PhotoCollectionViewCell
-                cell.photoView.image = nil
-                self.imagesToRemove.append(self.collectionView!.indexPathForCell(cell)!)
+            for photo in fetchedResultsController.fetchedObjects as! [Photo] {
+                self.context.deleteObject(photo)
             }
-            self.deleteAction()
+            
+            self.noImageText.hidden = false
             
             searchPhotos(self.pin)
-        }
-    }
-    
-    func deleteAction() {
-        
-        for index in self.imagesToRemove {
-            self.context.deleteObject(self.fetchedResultsController.objectAtIndexPath(index) as! NSManagedObject)
-        }
-        CoreDataStack.sharedInstance().saveContext()
-        self.imagesToRemove.removeAll()
-        
-        // Invoke fetchedResultsController.performFetch(nil) here
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {}
-        
-        dispatch_async(dispatch_get_main_queue()) {
-            self.collectionView.reloadData()
-        }
-        
-        if (self.pin.photos?.count == 0) {
-            self.noImageText.hidden = false
-        } else {
-            self.noImageText.hidden = true
+            
+            dispatch_async(dispatch_get_main_queue()) {
+                if (self.pin.photos?.count == 0) {
+                    self.noImageText.hidden = false
+                } else {
+                    self.noImageText.hidden = true
+                }
+                self.newCollectionButton.enabled = true
+            }
         }
     }
     
     func searchPhotos(pin: Pin) {
         
-        RestClient.sharedInstance().taskForPhotosSearch(pin) { result, error in
+        RestClient.sharedInstance.taskForPhotosSearch(pin) { result, error in
             if let error = error {
                 print(error)
             } else {
@@ -156,15 +190,8 @@ extension PhotoAlbumViewController {
                         photo.pin = pin
                         return photo
                     }
-                    CoreDataStack.sharedInstance().saveContext()
-                    
+                    CoreDataStack.sharedInstance.saveContext()
                 }
-//                CoreDataStack.sharedInstance().saveContext()
-                
-                do {
-                    try self.fetchedResultsController.performFetch()
-                } catch {}
-                
                 
                 dispatch_async(dispatch_get_main_queue()) {
                     self.collectionView.reloadData()
@@ -177,7 +204,6 @@ extension PhotoAlbumViewController {
                 }
             }
         }
-        
     }
     
 }
@@ -189,7 +215,9 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         return sectionInfo.numberOfObjects
     }
     
+    
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
         let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCellID", forIndexPath: indexPath) as! PhotoCollectionViewCell
         
@@ -197,23 +225,17 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         if photo.url == nil || photo.url == "" {
             // if the photo doesn´t have an image, we remove it from the collection
             self.context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as! NSManagedObject)
-            CoreDataStack.sharedInstance().saveContext()
-            
-            // Invoke fetchedResultsController.performFetch(nil) here
-            do {
-                try fetchedResultsController.performFetch()
-            } catch {}
+            CoreDataStack.sharedInstance.saveContext()
             
             dispatch_async(dispatch_get_main_queue()) {
                 self.collectionView.reloadData()
             }
-            
         } else {
             
             if photo.image == nil {
                 cell.activityIndicator.startAnimating()
                 
-                RestClient.sharedInstance().taskForImageDownload(photo.url!) { imageData, error in
+                RestClient.sharedInstance.taskForImageDownload(photo.url!) { imageData, error in
                     
                     if let error = error {
                         print("Flickr Photo Download Error:\(error)")
@@ -223,7 +245,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                         
                         self.context.performBlock {
                             photo.image = data
-                            CoreDataStack.sharedInstance().saveContext()
+                            CoreDataStack.sharedInstance.saveContext()
                         }
                         
                         //Update the cell later, on the main thread
@@ -242,9 +264,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath)
-        cell!.alpha = 0.5
-        self.imagesToRemove.append(indexPath)
-        self.deleteAction()
+        self.context.deleteObject(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
     }
 }

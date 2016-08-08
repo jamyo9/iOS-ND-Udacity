@@ -18,7 +18,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate, NSF
     var currentPin: Pin? = nil
     
     var context: NSManagedObjectContext {
-        return CoreDataStack.sharedInstance().context
+        return CoreDataStack.sharedInstance.context
     }
     
     override func viewDidLoad() {
@@ -30,11 +30,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate, NSF
         
         getPins()
         getLastRegion()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -92,7 +87,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate, NSF
             mapView.addAnnotation(annotation)
             let _ = Pin(latitude: coordinates.latitude, longitude: coordinates.longitude, createdAt: NSDate(), totalPages: 0, context: context)
         case .Ended:
-            CoreDataStack.sharedInstance().saveContext()
+            CoreDataStack.sharedInstance.saveContext()
         default:
             return
         }

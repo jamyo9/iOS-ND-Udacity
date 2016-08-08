@@ -6,6 +6,8 @@
 import Foundation
 import MapKit
 
+private let sharedClient = RestClient()
+
 class RestClient: NSObject {
     
     func taskForPhotosSearch(pin: Pin, completionHandler: (result: AnyObject?, errorString: String?) -> Void) {
@@ -57,9 +59,9 @@ class RestClient: NSObject {
                 }
                 
                 if let totalPages = photos["pages"] as? Int {
-                    CoreDataStack.sharedInstance().context.performBlock {
+                    CoreDataStack.sharedInstance.context.performBlock {
                         pin.totalPages = totalPages
-                        CoreDataStack.sharedInstance().saveContext()
+                        CoreDataStack.sharedInstance.saveContext()
                     }
                 } else {
                     completionHandler(result : nil, errorString: "Cannot find key 'pages' in \(photos)")
@@ -82,13 +84,16 @@ class RestClient: NSObject {
         }
     }
     
-    class func sharedInstance() -> RestClient {
-        
-        struct Singleton {
-            static var sharedInstance = RestClient()
-        }
-        
-        return Singleton.sharedInstance
-    }
+//    class func sharedInstance() -> RestClient {
+//        
+//        struct Singleton {
+//            static var sharedInstance = RestClient()
+//        }
+//        
+//        return Singleton.sharedInstance
+//    }
     
+    class var sharedInstance: RestClient {
+        return sharedClient
+    }
 }

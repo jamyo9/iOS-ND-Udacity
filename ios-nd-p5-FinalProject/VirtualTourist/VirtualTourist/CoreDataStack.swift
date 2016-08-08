@@ -8,6 +8,8 @@
 
 import CoreData
 
+private let sharedCoreDataStack = CoreDataStack(modelName: "VirtualTouristModel")
+
 class CoreDataStack {
     
     // MARK:  - Properties
@@ -17,12 +19,16 @@ class CoreDataStack {
     private let dbURL : NSURL
     let context : NSManagedObjectContext
     
-    class func sharedInstance() -> CoreDataStack {
-        struct Static {
-            static let instance = CoreDataStack(modelName: "VirtualTouristModel")
-        }
-        
-        return Static.instance!
+//    class func sharedInstance() -> CoreDataStack {
+//        struct Static {
+//            static let instance = CoreDataStack(modelName: "VirtualTouristModel")
+//        }
+//        
+//        return Static.instance!
+//    }
+    
+    class var sharedInstance: CoreDataStack {
+        return sharedCoreDataStack!
     }
     
     // MARK:  - Initializers
