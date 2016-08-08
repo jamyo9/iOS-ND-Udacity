@@ -103,23 +103,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, NSFetchedRe
             insertedIndexPaths.append(newIndexPath!)
             break
         case .Delete:
-            print("Delete an item")
             deletedIndexPaths.append(indexPath!)
             break
         case .Update:
-            print("Update an item.")
             updatedIndexPaths.append(indexPath!)
             break
         case .Move:
-            print("Move an item. We don't expect to see this in this app.")
             break
         }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        
-        print("In controllerDidChangeContent. changes.count: \(insertedIndexPaths.count + deletedIndexPaths.count)")
-        
         collectionView.performBatchUpdates({() -> Void in
             
             for indexPath in self.insertedIndexPaths {
@@ -155,15 +149,6 @@ extension PhotoAlbumViewController {
             self.noImageText.hidden = false
             
             searchPhotos(self.pin)
-            
-            dispatch_async(dispatch_get_main_queue()) {
-                if (self.pin.photos?.count == 0) {
-                    self.noImageText.hidden = false
-                } else {
-                    self.noImageText.hidden = true
-                }
-                self.newCollectionButton.enabled = true
-            }
         }
     }
     
