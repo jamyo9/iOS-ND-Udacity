@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "House.h"
-//#import "House_ObjC_main-Swift.h"
+#import "House_ObjC_main-Swift.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
